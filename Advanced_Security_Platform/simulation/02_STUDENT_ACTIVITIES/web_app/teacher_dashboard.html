@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👨‍🏫 Teacher Dashboard - Cybersecurity Education</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #27ae60, #2ecc71);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+        }
+
+        .back-btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
+        }
+
+        .action-card {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+        }
+
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #27ae60;
+        }
+
+        .action-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .action-card p {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .grade-sections {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .grade-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .grade-header {
+            padding: 20px;
+            color: white;
+            text-align: center;
+        }
+
+        .elementary {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .middle-school {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .high-school {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .grade-content {
+            padding: 25px;
+        }
+
+        .lesson-item {
+            background: #f8f9fa;
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .lesson-item:hover {
+            background: #e9ecef;
+            transform: translateX(5px);
+        }
+
+        .lesson-title {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .lesson-description {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .lesson-duration {
+            color: #3498db;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .tools-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .tools-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .tool-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .tool-item:hover {
+            border-color: #27ae60;
+            box-shadow: 0 5px 15px rgba(39, 174, 96, 0.2);
+        }
+
+        .tool-item.safe {
+            border-left: 4px solid #27ae60;
+        }
+
+        .tool-item.supervised {
+            border-left: 4px solid #f39c12;
+        }
+
+        .tool-item.advanced {
+            border-left: 4px solid #e74c3c;
+        }
+
+        .safety-badge {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8em;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .safe-badge {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .supervised-badge {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .advanced-badge {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .launch-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .launch-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background-color: white;
+            margin: 10% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 80%;
+            max-width: 600px;
+            position: relative;
+        }
+
+        .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .grade-sections {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>👨‍🏫 Teacher Dashboard</h1>
+            <a href="index.html" class="back-btn">← Back to Main</a>
+        </header>
+
+        <main class="main-content">
+            <div class="quick-actions">
+                <div class="action-card" onclick="openModal('quickStart')">
+                    <div class="action-icon">🚀</div>
+                    <h3>Quick Start Guide</h3>
+                    <p>5-minute setup for first-time users</p>
+                </div>
+                <div class="action-card" onclick="openModal('safetyGuide')">
+                    <div class="action-icon">🔒</div>
+                    <h3>Safety Guidelines</h3>
+                    <p>Essential safety and ethical policies</p>
+                </div>
+                <div class="action-card" onclick="window.open('student_progress.html', '_blank')">
+                    <div class="action-icon">📊</div>
+                    <h3>Student Progress</h3>
+                    <p>Track class performance and individual growth</p>
+                </div>
+                <div class="action-card" onclick="openModal('techSupport')">
+                    <div class="action-icon">🆘</div>
+                    <h3>Technical Support</h3>
+                    <p>Help with setup and troubleshooting</p>
+                </div>
+            </div>
+
+            <div class="grade-sections">
+                <div class="grade-card">
+                    <div class="grade-header elementary">
+                        <h2>🎪 Elementary (Grades 3-5)</h2>
+                        <p>Digital Citizenship & Safety Basics</p>
+                    </div>
+                    <div class="grade-content">
+                        <div class="lesson-item" onclick="launchActivity('password-power')">
+                            <div class="lesson-title">🔐 Password Power</div>
+                            <div class="lesson-description">Learn to create strong passwords and understand digital safety</div>
+                            <div class="lesson-duration">⏱️ 30 minutes</div>
+                        </div>
+                        <div class="lesson-item" onclick="launchActivity('internet-safety')">
+                            <div class="lesson-title">🌐 Internet Safety Adventures</div>
+                            <div class="lesson-description">Identify safe online behaviors and potential dangers</div>
+                            <div class="lesson-duration">⏱️ 45 minutes</div>
+                        </div>
+                        <div class="lesson-item" onclick="launchActivity('digital-citizenship')">
+                            <div class="lesson-title">👨‍💻 Digital Citizenship Basics</div>
+                            <div class="lesson-description">Understanding responsible technology use</div>
+                            <div class="lesson-duration">⏱️ 40 minutes</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grade-card">
+                    <div class="grade-header middle-school">
+                        <h2>🔍 Middle School (Grades 6-8)</h2>
+                        <p>Cybersecurity Awareness & Career Exploration</p>
+                    </div>
+                    <div class="grade-content">
+                        <div class="lesson-item" onclick="launchActivity('career-exploration')">
+                            <div class="lesson-title">🎯 Cybersecurity Career Exploration</div>
+                            <div class="lesson-description">Discover exciting cybersecurity careers and pathways</div>
+                            <div class="lesson-duration">⏱️ 50 minutes</div>
+                        </div>
+                        <div class="lesson-item" onclick="launchActivity('phishing-detective')">
+                            <div class="lesson-title">🕵️ Social Engineering Detective</div>
+                            <div class="lesson-description">Learn to spot phishing and manipulation tactics</div>
+                            <div class="lesson-duration">⏱️ 45 minutes</div>
+                        </div>
+                        <div class="lesson-item" onclick="launchActivity('crypto-basics')">
+                            <div class="lesson-title">🔢 Cryptography Mysteries</div>
+                            <div class="lesson-description">Explore secret codes and encryption basics</div>
+                            <div class="lesson-duration">⏱️ 60 minutes</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grade-card">
+                    <div class="grade-header high-school">
+                        <h2>🛡️ High School (Grades 9-12)</h2>
+                        <p>Technical Skills & Ethical Hacking</p>
+                    </div>
+                    <div class="grade-content">
+                        <div class="lesson-item" onclick="launchActivity('network-security')">
+                            <div class="lesson-title">🌐 Network Security Fundamentals</div>
+                            <div class="lesson-description">Understand network protection and common attacks</div>
+                            <div class="lesson-duration">⏱️ 90 minutes</div>
+                        </div>
+                        <div class="lesson-item" onclick="launchActivity('web-security')">
+                            <div class="lesson-title">🏦 Web Application Security</div>
+                            <div class="lesson-description">Experience real vulnerabilities in safe environment</div>
+                            <div class="lesson-duration">⏱️ 120 minutes</div>
+                        </div>
+                        <div class="lesson-item" onclick="launchActivity('ethical-hacking')">
+                            <div class="lesson-title">⚠️ Ethical Hacking Methodology</div>
+                            <div class="lesson-description">Learn defensive techniques through offensive understanding</div>
+                            <div class="lesson-duration">⏱️ 90 minutes (Supervised)</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tools-section">
+                <h3>🛠️ Available Teaching Tools</h3>
+                <div class="tools-grid">
+                    <div class="tool-item safe">
+                        <span class="safety-badge safe-badge">✅ SAFE</span>
+                        <h4>🎓 Student Registration</h4>
+                        <p>Register students and track their learning progress through age-appropriate curriculum.</p>
+                        <button class="launch-btn" onclick="launchTool('student-registration')">Launch Tool</button>
+                    </div>
+                    <div class="tool-item safe">
+                        <span class="safety-badge safe-badge">✅ SAFE</span>
+                        <h4>📝 Assessment Center</h4>
+                        <p>Interactive quizzes and challenges for all grade levels with automated grading.</p>
+                        <button class="launch-btn" onclick="launchTool('assessment-center')">Launch Tool</button>
+                    </div>
+                    <div class="tool-item supervised">
+                        <span class="safety-badge supervised-badge">⚠️ SUPERVISED</span>
+                        <h4>🏦 Banking Simulation</h4>
+                        <p>Realistic web security demonstration for middle and high school students.</p>
+                        <button class="launch-btn" onclick="launchTool('banking-simulation')">Launch Tool</button>
+                    </div>
+                    <div class="tool-item advanced">
+                        <span class="safety-badge advanced-badge">🚨 TEACHER ONLY</span>
+                        <h4>🛡️ Ethical Hacker Simulation</h4>
+                        <p>Advanced attack methodology demonstration requiring expert supervision.</p>
+                        <button class="launch-btn" onclick="launchTool('hacker-simulation')">Launch Tool</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modal for additional information -->
+    <div id="infoModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+        function openModal(type) {
+            const modal = document.getElementById('infoModal');
+            const content = document.getElementById('modalContent');
+            
+            const modalContent = {
+                quickStart: `
+                    <h2>🚀 Quick Start Guide</h2>
+                    <h3>Getting Started in 5 Minutes:</h3>
+                    <ol>
+                        <li><strong>Choose Your Grade Level:</strong> Select activities appropriate for your students</li>
+                        <li><strong>Review Safety Guidelines:</strong> Click the Safety Guidelines for important policies</li>
+                        <li><strong>Start with Safe Tools:</strong> Begin with Student Registration and Assessment Center</li>
+                        <li><strong>Progress Gradually:</strong> Move to supervised activities as students advance</li>
+                        <li><strong>Monitor Progress:</strong> Use Student Progress tracker to monitor learning</li>
+                    </ol>
+                    <h3>💡 Pro Tips:</h3>
+                    <ul>
+                        <li>Always test activities yourself before using with students</li>
+                        <li>Discuss ethical guidelines before each session</li>
+                        <li>Use the assessment tools to track understanding</li>
+                        <li>Supervised tools require your active oversight</li>
+                    </ul>
+                `,
+                safetyGuide: `
+                    <h2>🔒 Safety Guidelines</h2>
+                    <h3>🎯 Core Principles:</h3>
+                    <ul>
+                        <li><strong>Educational Purpose Only:</strong> All tools for learning in controlled environments</li>
+                        <li><strong>Age-Appropriate Content:</strong> Grade-level filtering ensures appropriate experiences</li>
+                        <li><strong>Ethical Boundaries:</strong> Strong emphasis on responsible use throughout</li>
+                        <li><strong>Supervised Learning:</strong> Advanced tools require qualified teacher oversight</li>
+                    </ul>
+                    <h3>🚫 Never Allow Students To:</h3>
+                    <ul>
+                        <li>Attempt attacks on real systems or networks</li>
+                        <li>Share attack techniques outside educational context</li>
+                        <li>Use tools without proper supervision</li>
+                        <li>Test vulnerabilities on actual school networks</li>
+                    </ul>
+                    <h3>✅ Always Ensure:</h3>
+                    <ul>
+                        <li>Proper supervision for advanced activities</li>
+                        <li>Ethical discussion before and after lessons</li>
+                        <li>Clear consequences for policy violations</li>
+                        <li>Isolated network environment when required</li>
+                    </ul>
+                `,
+                techSupport: `
+                    <h2>🆘 Technical Support</h2>
+                    <h3>Common Issues & Solutions:</h3>
+                    <p><strong>Tools won't launch:</strong> Ensure you're using a modern web browser (Chrome, Firefox, Safari, Edge)</p>
+                    <p><strong>Activities not loading:</strong> Check that all HTML files are in the same folder</p>
+                    <p><strong>Student progress not saving:</strong> Make sure local storage is enabled in your browser</p>
+                    
+                    <h3>📞 Need More Help?</h3>
+                    <ul>
+                        <li>Check the comprehensive Teacher Guide (TEACHER_GUIDE.md)</li>
+                        <li>Consult your school's technology coordinator</li>
+                        <li>Review troubleshooting documentation</li>
+                        <li>Contact educational technology support</li>
+                    </ul>
+                    
+                    <h3>💻 System Requirements:</h3>
+                    <ul>
+                        <li>Modern web browser with JavaScript enabled</li>
+                        <li>Local storage support for progress tracking</li>
+                        <li>No internet required - works offline</li>
+                    </ul>
+                `
+            };
+            
+            content.innerHTML = modalContent[type];
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+        }
+
+        function launchActivity(activity) {
+            const activityMap = {
+                'password-power': 'elementary_password.html',
+                'internet-safety': 'elementary_safety.html',
+                'digital-citizenship': 'elementary_citizenship.html',
+                'career-exploration': 'middle_careers.html',
+                'phishing-detective': 'middle_phishing.html',
+                'crypto-basics': 'middle_crypto.html',
+                'network-security': 'high_network.html',
+                'web-security': 'high_websecurity.html',
+                'ethical-hacking': 'high_ethical.html'
+            };
+            
+            const filename = activityMap[activity];
+            if (filename) {
+                window.open(filename, '_blank');
+            }
+        }
+
+        function launchTool(tool) {
+            const toolMap = {
+                'student-registration': 'tool_registration.html',
+                'assessment-center': 'tool_assessment.html',
+                'banking-simulation': 'tool_banking.html',
+                'hacker-simulation': 'tool_hacking.html'
+            };
+            
+            const filename = toolMap[tool];
+            if (filename) {
+                // For supervised and advanced tools, show safety confirmation
+                if (tool === 'banking-simulation') {
+                    if (confirm('This tool requires teacher supervision. Have you prepared appropriate ethical guidelines and will you supervise student activity?')) {
+                        window.open(filename, '_blank');
+                    }
+                } else if (tool === 'hacker-simulation') {
+                    if (confirm('This tool requires expert teacher supervision and should only be used by qualified instructors. Are you qualified to supervise this activity?')) {
+                        window.open(filename, '_blank');
+                    }
+                } else {
+                    window.open(filename, '_blank');
+                }
+            }
+        }
+
+        // Close modal when clicking outside of it
+        window.onclick = function(event) {
+            const modal = document.getElementById('infoModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Add loading animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.grade-card, .action-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>

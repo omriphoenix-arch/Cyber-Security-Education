@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🏫 School Cybersecurity Education Platform</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .role-selector {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+
+        .role-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            border: 3px solid transparent;
+            cursor: pointer;
+        }
+
+        .role-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+            border-color: #3498db;
+        }
+
+        .role-card.teacher {
+            background: linear-gradient(135deg, #e8f5e8, #f0f8f0);
+        }
+
+        .role-card.student {
+            background: linear-gradient(135deg, #e8f0ff, #f0f4ff);
+        }
+
+        .role-card.parent {
+            background: linear-gradient(135deg, #fff5e8, #fff8f0);
+        }
+
+        .role-icon {
+            font-size: 4em;
+            margin-bottom: 20px;
+            display: block;
+        }
+
+        .role-card h2 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 1.8em;
+        }
+
+        .role-card p {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .btn.teacher-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+        }
+
+        .btn.student-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+        }
+
+        .btn.parent-btn {
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+        }
+
+        .info-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .info-section h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .feature-list {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .feature-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .feature-item h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .feature-item p {
+            color: #666;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+
+        .footer {
+            background: #2c3e50;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .role-selector {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🏫 School Cybersecurity Education Platform</h1>
+            <p>Safe, Interactive, and Age-Appropriate Cybersecurity Learning</p>
+        </header>
+
+        <main class="main-content">
+            <div class="role-selector">
+                <div class="role-card teacher" onclick="window.location.href='teacher_dashboard.html'">
+                    <span class="role-icon">👨‍🏫</span>
+                    <h2>Teachers & Educators</h2>
+                    <p>Access lesson plans, manage student progress, and launch educational simulations with built-in safety guidelines.</p>
+                    <a href="teacher_dashboard.html" class="btn teacher-btn">Teacher Dashboard</a>
+                </div>
+
+                <div class="role-card student" onclick="window.location.href='student_portal.html'">
+                    <span class="role-icon">👨‍🎓</span>
+                    <h2>Students</h2>
+                    <p>Learn cybersecurity through interactive lessons, quizzes, and hands-on activities designed for your grade level.</p>
+                    <a href="student_portal.html" class="btn student-btn">Student Portal</a>
+                </div>
+
+                <div class="role-card parent" onclick="window.location.href='parent_info.html'">
+                    <span class="role-icon">👪</span>
+                    <h2>Parents & Guardians</h2>
+                    <p>View your child's progress, understand what they're learning, and get resources for home cybersecurity.</p>
+                    <a href="parent_info.html" class="btn parent-btn">Parent Information</a>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>🎯 Why Cybersecurity Education Matters</h3>
+                <p>In today's digital world, cybersecurity knowledge is as important as traditional safety education. Our platform teaches students to be safe, responsible digital citizens while preparing them for potential cybersecurity careers.</p>
+                
+                <div class="feature-list">
+                    <div class="feature-item">
+                        <h4>🔒 Age-Appropriate Safety</h4>
+                        <p>Content automatically adapts to grade levels, ensuring age-appropriate learning experiences from elementary through high school.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>🎮 Interactive Learning</h4>
+                        <p>Hands-on simulations and games make cybersecurity concepts engaging and memorable for all learners.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>👨‍🏫 Teacher Support</h4>
+                        <p>Complete lesson plans, safety guidelines, and assessment tools support educators at every step.</p>
+                    </div>
+                    <div class="feature-item">
+                        <h4>📊 Progress Tracking</h4>
+                        <p>Real-time analytics help teachers and parents monitor student progress and identify learning opportunities.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="info-section">
+                <h3>🚀 Getting Started is Easy</h3>
+                <p><strong>Teachers:</strong> Click "Teacher Dashboard" to access lesson plans and launch activities.<br>
+                <strong>Students:</strong> Click "Student Portal" to begin learning adventures.<br>
+                <strong>Parents:</strong> Click "Parent Information" to see what your child is learning.</p>
+            </div>
+        </main>
+
+        <footer class="footer">
+            <p>🛡️ Designed for safe, ethical cybersecurity education in K-12 environments</p>
+            <p>Remember: Use knowledge responsibly to make the digital world safer for everyone!</p>
+        </footer>
+    </div>
+
+    <script>
+        // Add click animations
+        document.querySelectorAll('.role-card').forEach(card => {
+            card.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'translateY(-5px)';
+                }, 100);
+            });
+        });
+
+        // Welcome animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cards = document.querySelectorAll('.role-card');
+            cards.forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = '0';
+                    card.style.transform = 'translateY(20px)';
+                    card.style.transition = 'all 0.6s ease';
+                    setTimeout(() => {
+                        card.style.opacity = '1';
+                        card.style.transform = 'translateY(0)';
+                    }, 50);
+                }, index * 200);
+            });
+        });
+    </script>
+</body>
+</html>

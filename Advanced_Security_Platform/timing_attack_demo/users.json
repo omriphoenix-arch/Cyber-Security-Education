@@ -1,0 +1,12 @@
+{
+  "demo_user": {
+    "username": "demo_user",
+    "email": "demo@example.com",
+    "password_hash": "fd5733ccf0037029b07869277d6269182ab8aa26b7b2d70511588331261b2e6e",
+    "salt": "71437e93059d56a56aa53d9064cc11e5a10bc3229e37f027c6825d923365f73f",
+    "created_at": "2025-09-30T10:22:56.633349",
+    "last_login": "2025-09-30T10:22:56.697126",
+    "is_active": true,
+    "failed_login_count": 0
+  }
+}

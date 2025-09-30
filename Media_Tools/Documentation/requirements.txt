@@ -1,0 +1,11 @@
+# All Requirements for Media Applications
+# Media Player
+pygame==2.5.2
+opencv-python
+Pillow==10.0.1
+mutagen==1.47.0
+numpy<2
+
+# YouTube Downloader  
+yt-dlp
+urllib3

@@ -1,0 +1,12 @@
+{
+  "victim": {
+    "username": "victim",
+    "email": "victim@test.com",
+    "password_hash": "69b236f75a1fae38d50130ec24c2959f1b12cf7c26d098dc95849e0e50402da5",
+    "salt": "0b57e43e87ab438465a987e00be40b820009c71af6afad51ead82c7e15921046",
+    "created_at": "2025-09-30T10:24:09.422104",
+    "last_login": null,
+    "is_active": true,
+    "failed_login_count": 4
+  }
+}

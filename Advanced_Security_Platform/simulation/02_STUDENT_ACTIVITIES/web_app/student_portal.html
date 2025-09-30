@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>👨‍🎓 Student Portal - Cybersecurity Learning</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .back-btn {
+            position: absolute;
+            left: 30px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255,255,255,0.2);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 20px;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            padding: 40px;
+        }
+
+        .login-section {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .login-form {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: bold;
+        }
+
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus, .form-group select:focus {
+            outline: none;
+            border-color: #3498db;
+            box-shadow: 0 0 10px rgba(52, 152, 219, 0.2);
+        }
+
+        .login-btn {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .activities-section {
+            display: none;
+        }
+
+        .grade-selector {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .grade-btn {
+            background: linear-gradient(135deg, #e9ecef, #dee2e6);
+            border: none;
+            padding: 15px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #495057;
+            transition: all 0.3s ease;
+        }
+
+        .grade-btn.active {
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(52, 152, 219, 0.3);
+        }
+
+        .activities-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+        }
+
+        .activity-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 3px solid transparent;
+        }
+
+        .activity-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-color: #3498db;
+        }
+
+        .activity-header {
+            padding: 25px;
+            text-align: center;
+            color: white;
+        }
+
+        .elementary-activity {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a52);
+        }
+
+        .middle-activity {
+            background: linear-gradient(135deg, #4ecdc4, #44a08d);
+        }
+
+        .high-activity {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .activity-icon {
+            font-size: 3em;
+            margin-bottom: 15px;
+        }
+
+        .activity-title {
+            font-size: 1.4em;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .activity-content {
+            padding: 25px;
+        }
+
+        .activity-description {
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+
+        .activity-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .activity-duration {
+            background: #e3f2fd;
+            color: #1976d2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .activity-level {
+            background: #f3e5f5;
+            color: #7b1fa2;
+            padding: 5px 12px;
+            border-radius: 15px;
+            font-size: 0.9em;
+            font-weight: bold;
+        }
+
+        .start-btn {
+            background: linear-gradient(135deg, #27ae60, #229954);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 10px rgba(39, 174, 96, 0.3);
+        }
+
+        .progress-section {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .badges-section {
+            margin-top: 20px;
+        }
+
+        .badge {
+            display: inline-block;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
+            color: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            margin: 5px;
+            font-weight: bold;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2em;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+            
+            .grade-selector {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .activity-details {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <a href="index.html" class="back-btn">← Back to Main</a>
+            <h1>👨‍🎓 Student Learning Portal</h1>
+            <p>Interactive Cybersecurity Adventures</p>
+        </header>
+
+        <main class="main-content">
+            <div id="loginSection" class="login-section">
+                <h2>🎯 Let's Start Learning!</h2>
+                <p>Enter your information to begin your cybersecurity adventure</p>
+                
+                <form class="login-form" onsubmit="studentLogin(event)">
+                    <div class="form-group">
+                        <label for="studentName">Your Name:</label>
+                        <input type="text" id="studentName" required placeholder="Enter your first name">
+                    </div>
+                    <div class="form-group">
+                        <label for="gradeLevel">Select Your Grade:</label>
+                        <select id="gradeLevel" required>
+                            <option value="">Choose your grade level</option>
+                            <option value="elementary">Elementary (Grades 3-5)</option>
+                            <option value="middle">Middle School (Grades 6-8)</option>
+                            <option value="high">High School (Grades 9-12)</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="login-btn">🚀 Start Learning Adventure!</button>
+                </form>
+            </div>
+
+            <div id="activitiesSection" class="activities-section">
+                <div class="grade-selector">
+                    <button class="grade-btn" onclick="showGrade('elementary')">🎪 Elementary</button>
+                    <button class="grade-btn" onclick="showGrade('middle')">🔍 Middle School</button>
+                    <button class="grade-btn" onclick="showGrade('high')">🛡️ High School</button>
+                </div>
+
+                <div id="elementaryActivities" class="activities-grid hidden">
+                    <div class="activity-card" onclick="startActivity('password-power')">
+                        <div class="activity-header elementary-activity">
+                            <div class="activity-icon">🔐</div>
+                            <div class="activity-title">Password Power</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Learn how to create super-strong passwords that keep your accounts safe! Become a password superhero and protect your digital world.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 30 minutes</div>
+                                <div class="activity-level">🌟 Beginner</div>
+                            </div>
+                            <button class="start-btn">Start Adventure!</button>
+                        </div>
+                    </div>
+
+                    <div class="activity-card" onclick="startActivity('internet-safety')">
+                        <div class="activity-header elementary-activity">
+                            <div class="activity-icon">🌐</div>
+                            <div class="activity-title">Internet Safety Quest</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Go on an exciting quest to learn about staying safe online! Discover how to navigate the internet like a smart digital explorer.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 45 minutes</div>
+                                <div class="activity-level">🌟 Beginner</div>
+                            </div>
+                            <button class="start-btn">Start Quest!</button>
+                        </div>
+                    </div>
+
+                    <div class="activity-card" onclick="startActivity('digital-citizenship')">
+                        <div class="activity-header elementary-activity">
+                            <div class="activity-icon">👨‍💻</div>
+                            <div class="activity-title">Digital Citizenship Academy</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Join the Digital Citizenship Academy and learn how to be a responsible and kind digital citizen in our connected world.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 40 minutes</div>
+                                <div class="activity-level">🌟 Beginner</div>
+                            </div>
+                            <button class="start-btn">Join Academy!</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="middleActivities" class="activities-grid hidden">
+                    <div class="activity-card" onclick="startActivity('career-exploration')">
+                        <div class="activity-header middle-activity">
+                            <div class="activity-icon">🎯</div>
+                            <div class="activity-title">Cybersecurity Careers Explorer</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Discover amazing cybersecurity careers! Meet virtual professionals and learn about exciting job opportunities in the digital world.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 50 minutes</div>
+                                <div class="activity-level">⭐⭐ Intermediate</div>
+                            </div>
+                            <button class="start-btn">Explore Careers!</button>
+                        </div>
+                    </div>
+
+                    <div class="activity-card" onclick="startActivity('phishing-detective')">
+                        <div class="activity-header middle-activity">
+                            <div class="activity-icon">🕵️</div>
+                            <div class="activity-title">Phishing Detective</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Become a master detective and learn to spot suspicious emails, messages, and websites. Protect yourself and others from online tricks!
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 45 minutes</div>
+                                <div class="activity-level">⭐⭐ Intermediate</div>
+                            </div>
+                            <button class="start-btn">Start Investigation!</button>
+                        </div>
+                    </div>
+
+                    <div class="activity-card" onclick="startActivity('crypto-mystery')">
+                        <div class="activity-header middle-activity">
+                            <div class="activity-icon">🔢</div>
+                            <div class="activity-title">Cryptography Mystery Lab</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Enter the secret world of codes and ciphers! Learn how encryption works and solve mysterious coded messages.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 60 minutes</div>
+                                <div class="activity-level">⭐⭐ Intermediate</div>
+                            </div>
+                            <button class="start-btn">Enter Lab!</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="highActivities" class="activities-grid hidden">
+                    <div class="activity-card" onclick="startActivity('network-security')">
+                        <div class="activity-header high-activity">
+                            <div class="activity-icon">🌐</div>
+                            <div class="activity-title">Network Security Command Center</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Master the fundamentals of network security! Learn how to protect digital networks and understand common attack methods.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 90 minutes</div>
+                                <div class="activity-level">⭐⭐⭐ Advanced</div>
+                            </div>
+                            <button class="start-btn">Enter Command Center!</button>
+                        </div>
+                    </div>
+
+                    <div class="activity-card" onclick="startActivity('web-security')">
+                        <div class="activity-header high-activity">
+                            <div class="activity-icon">🏦</div>
+                            <div class="activity-title">Web Security Simulation</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Experience real web security scenarios in a safe environment. Learn about vulnerabilities and how to protect web applications.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 120 minutes</div>
+                                <div class="activity-level">⭐⭐⭐ Advanced</div>
+                            </div>
+                            <button class="start-btn">Start Simulation!</button>
+                        </div>
+                    </div>
+
+                    <div class="activity-card" onclick="startActivity('ethical-hacking')">
+                        <div class="activity-header high-activity">
+                            <div class="activity-icon">⚠️</div>
+                            <div class="activity-title">Ethical Hacking Workshop</div>
+                        </div>
+                        <div class="activity-content">
+                            <div class="activity-description">
+                                Learn ethical hacking principles and defensive security techniques. Understand how security professionals protect digital systems.
+                            </div>
+                            <div class="activity-details">
+                                <div class="activity-duration">⏱️ 90 minutes</div>
+                                <div class="activity-level">⭐⭐⭐ Expert</div>
+                            </div>
+                            <button class="start-btn">Join Workshop!</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <h3>📊 Your Learning Progress</h3>
+                    <div class="progress-stats">
+                        <div class="stat-item">
+                            <div class="stat-number" id="completedActivities">0</div>
+                            <div class="stat-label">Activities Completed</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="totalPoints">0</div>
+                            <div class="stat-label">Points Earned</div>
+                        </div>
+                        <div class="stat-item">
+                            <div class="stat-number" id="streakDays">0</div>
+                            <div class="stat-label">Day Learning Streak</div>
+                        </div>
+                    </div>
+                    <div class="badges-section">
+                        <h4>🏆 Your Badges:</h4>
+                        <div id="badgesList">
+                            <span class="badge">🌟 First Steps</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        let currentStudent = null;
+
+        function studentLogin(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('studentName').value;
+            const grade = document.getElementById('gradeLevel').value;
+            
+            if (name && grade) {
+                currentStudent = {
+                    name: name,
+                    grade: grade,
+                    activities: [],
+                    points: 0,
+                    badges: ['🌟 First Steps'],
+                    loginDate: new Date().toISOString()
+                };
+                
+                // Save to local storage
+                localStorage.setItem('currentStudent', JSON.stringify(currentStudent));
+                
+                // Show activities section
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('activitiesSection').style.display = 'block';
+                
+                // Show appropriate grade activities
+                showGrade(grade);
+                updateProgress();
+            }
+        }
+
+        function showGrade(grade) {
+            // Hide all activity grids
+            document.querySelectorAll('.activities-grid').forEach(grid => {
+                grid.classList.add('hidden');
+            });
+            
+            // Remove active class from all grade buttons
+            document.querySelectorAll('.grade-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Show selected grade activities
+            const gradeMap = {
+                'elementary': 'elementaryActivities',
+                'middle': 'middleActivities',
+                'high': 'highActivities'
+            };
+            
+            document.getElementById(gradeMap[grade]).classList.remove('hidden');
+            
+            // Activate corresponding button
+            document.querySelector(`[onclick="showGrade('${grade}')"]`).classList.add('active');
+        }
+
+        function startActivity(activityId) {
+            if (!currentStudent) return;
+            
+            const activityMap = {
+                'password-power': 'elementary_password.html',
+                'internet-safety': 'elementary_safety.html',
+                'digital-citizenship': 'elementary_citizenship.html',
+                'career-exploration': 'middle_careers.html',
+                'phishing-detective': 'middle_phishing.html',
+                'crypto-mystery': 'middle_crypto.html',
+                'network-security': 'high_network.html',
+                'web-security': 'high_websecurity.html',
+                'ethical-hacking': 'high_ethical.html'
+            };
+            
+            const filename = activityMap[activityId];
+            
+            if (filename) {
+                // Record activity start
+                currentStudent.activities.push({
+                    id: activityId,
+                    startTime: new Date().toISOString(),
+                    completed: false
+                });
+                
+                localStorage.setItem('currentStudent', JSON.stringify(currentStudent));
+                
+                // Open activity in new tab
+                window.open(filename, '_blank');
+            }
+        }
+
+        function updateProgress() {
+            if (!currentStudent) return;
+            
+            const completed = currentStudent.activities.filter(a => a.completed).length;
+            document.getElementById('completedActivities').textContent = completed;
+            document.getElementById('totalPoints').textContent = currentStudent.points;
+            
+            // Calculate streak (simplified)
+            const today = new Date();
+            const loginDate = new Date(currentStudent.loginDate);
+            const daysDiff = Math.floor((today - loginDate) / (1000 * 60 * 60 * 24));
+            document.getElementById('streakDays').textContent = Math.max(1, daysDiff);
+            
+            // Update badges
+            const badgesList = document.getElementById('badgesList');
+            badgesList.innerHTML = currentStudent.badges.map(badge => 
+                `<span class="badge">${badge}</span>`
+            ).join('');
+        }
+
+        // Check for existing student session
+        document.addEventListener('DOMContentLoaded', function() {
+            const savedStudent = localStorage.getItem('currentStudent');
+            if (savedStudent) {
+                currentStudent = JSON.parse(savedStudent);
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('activitiesSection').style.display = 'block';
+                showGrade(currentStudent.grade);
+                updateProgress();
+            }
+            
+            // Add loading animation
+            const cards = document.querySelectorAll('.activity-card');
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                setTimeout(() => {
+                    card.style.transition = 'all 0.6s ease';
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        });
+    </script>
+</body>
+</html>
