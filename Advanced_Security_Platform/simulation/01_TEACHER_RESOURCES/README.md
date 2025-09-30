@@ -18,6 +18,11 @@
 - `assessment_tools.py` - Interactive quiz generator and grading system
 - `student_progress.json` - Sample student data for testing
 
+### **🆕 Enhanced School Features (NEW!)**
+- `gradebook_system.py` - 📊 Professional gradebook with grade export and parent reports
+- `standards_alignment.py` - 🎯 CSTA/Common Core standards mapping and compliance reporting
+- `ENHANCED_FEATURES_GUIDE.md` - 📚 Complete implementation guide for school deployment
+
 ### **🎯 How to Use These Resources:**
 
 #### **For Web-Based Teaching (Easiest):**

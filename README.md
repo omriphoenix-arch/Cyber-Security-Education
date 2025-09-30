@@ -58,6 +58,26 @@ This educational platform offers a complete cybersecurity curriculum suitable fo
 1. **For Educators**: Start with `Advanced_Security_Platform/00_START_HERE/`
 2. **For Students**: Begin with `Programming_Lab/` for foundational skills
 3. **For Demonstrations**: Use `Cybersecurity_Demos/` for engaging presentations
+4. **📊 NEW: Enhanced School Features**: Professional gradebook and standards alignment in `01_TEACHER_RESOURCES/`
+
+## 🆕 **Latest School-Ready Features**
+
+### **📊 Professional Gradebook System**
+- **Complete Grade Management**: Weighted categories, automatic calculations, and analytics
+- **Parent Progress Reports**: Automated HTML reports with detailed student analysis  
+- **School System Integration**: CSV export compatible with district information systems
+- **Class Performance Analytics**: Grade distribution and summary reports for administrators
+
+### **🎯 Standards Alignment System**  
+- **CSTA Standards Mapping**: Complete K-12 Computer Science Teachers Association alignment
+- **Common Core Integration**: Mathematics standards for cryptography and STEM content
+- **CTE Career Pathways**: Career and Technical Education cybersecurity track support
+- **Compliance Reporting**: Automated documentation for curriculum review and accreditation
+
+**Access Enhanced Features**: `Advanced_Security_Platform/simulation/01_TEACHER_RESOURCES/`
+- `gradebook_system.py` - Complete gradebook with export capabilities
+- `standards_alignment.py` - Comprehensive standards mapping and reporting  
+- `ENHANCED_FEATURES_GUIDE.md` - Complete implementation guide for schools
 
 ## 🛡️ Safety & Ethics
 
