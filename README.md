@@ -1,123 +1,247 @@
-# Multi-Domain Education Platform
+# K-12 Educational Platform Suite
+## Comprehensive Educational Resources & Interactive Learning Tools
 
-A comprehensive educational platform designed for K-12 students and educators, providing hands-on learning experiences across multiple academic domains with a focus on technology, security, and digital literacy.
-
-## 🎯 Platform Overview
-
-This educational platform offers complete curriculum resources suitable for:
-- K-12 computer science and technology programs
-- Career and Technical Education (CTE) pathways
-- Digital literacy and safety courses
-- STEM integration across subjects
-- Professional development for educators
-
-## 📚 Educational Domains
-
-### 🛡️ Cybersecurity Education
-**Location**: `Cybersecurity/`
-
-**Complete cybersecurity curriculum from elementary through high school:**
-
-#### **🏫 Advanced Security Platform** (`Cybersecurity/Advanced_Security_Platform/`)
-- **Teacher Resources**: Comprehensive lesson plans, assessment tools, and curriculum guides
-- **Student Activities**: Interactive exercises, simulations, and hands-on projects
-- **Advanced Tools**: Professional-grade security analysis and demonstration tools
-- **Getting Started**: Begin with `00_START_HERE/` for setup instructions
-
-#### **🎭 Cybersecurity Demos** (`Cybersecurity/Cybersecurity_Demos/`)
-- **Terminal Simulation**: Movie-style hacker interface for educational demonstrations
-- **Demo Controller**: Safe, controlled environment for security awareness training
-- **Reality vs Fiction**: Teaching tool to distinguish between Hollywood and real cybersecurity
-
-#### **💻 Programming Lab** (`Cybersecurity/Programming_Lab/`)
-- **Interactive Python IDE**: Safe coding environment for students
-- **Security-focused Programming**: Learn coding with cybersecurity applications
-- **Guided Tutorials**: Step-by-step programming exercises
-
-#### **🔐 Password Security Lab** (`Cybersecurity/Password_Security_Lab/`)
-- **Encryption Methods Demo**: Understanding cryptographic principles
-- **PIN Attack Analysis**: Educational brute force simulations
-- **Password Security Best Practices**: Real-world security implementation
-
-#### **🎵 Media Tools** (`Cybersecurity/Media_Tools/`)
-- **Educational Media Players**: Tools for cybersecurity training videos
-- **Content Management**: Organize and deliver multimedia educational content
-
-#### **🗄️ Database Security** (`Cybersecurity/Database/`)
-- **Centralized Storage**: Secure database for educational records and resources
-- **Student Progress Tracking**: Monitor learning outcomes and achievements
-
-#### **🔍 Digital Forensics Lab** (`Cybersecurity/Digital_Forensics_Lab/`)
-- **Crime Scene Investigation**: Educational forensics scenarios
-- **Evidence Analysis Tools**: Learn digital investigation techniques
-- **Case Studies**: Real-world inspired cybersecurity incidents
-
-### 🚀 **Future Educational Domains (Ready for Expansion)**
-
-*The platform architecture supports easy addition of new subject areas:*
-
-- **🧮 Mathematics & STEM** - Interactive math tools, scientific simulations, engineering projects
-- **🌍 Science & Environmental Studies** - Climate data analysis, ecosystem modeling, research tools
-- **🏛️ Social Studies & Digital Citizenship** - Government simulations, historical analysis, civic engagement
-- **🎨 Digital Arts & Creative Technology** - Design tools, multimedia creation, digital portfolios
-- **💼 Business & Entrepreneurship** - Economic simulations, project management, financial literacy
-- **📚 Language Arts & Communication** - Writing tools, presentation software, collaboration platforms
-
-## 🚀 Quick Start Guide
-
-### **🛡️ Cybersecurity Education:**
-1. **For Educators**: Start with `Cybersecurity/Advanced_Security_Platform/00_START_HERE/`
-2. **For Students**: Begin with `Cybersecurity/Programming_Lab/` for foundational skills
-3. **For Demonstrations**: Use `Cybersecurity/Cybersecurity_Demos/` for engaging presentations
-4. **📊 Professional School Features**: Access enhanced gradebook and standards alignment in `Cybersecurity/Advanced_Security_Platform/simulation/01_TEACHER_RESOURCES/`
-
-### **🎯 Platform Expansion:**
-- **Current Focus**: Complete cybersecurity curriculum (K-12)
-- **Architecture**: Modular design supports easy addition of new domains
-- **Next Steps**: Ready for mathematics, science, social studies, and arts integration
-
-## 🆕 **Latest School-Ready Features**
-
-### **📊 Professional Gradebook System**
-- **Complete Grade Management**: Weighted categories, automatic calculations, and analytics
-- **Parent Progress Reports**: Automated HTML reports with detailed student analysis  
-- **School System Integration**: CSV export compatible with district information systems
-- **Class Performance Analytics**: Grade distribution and summary reports for administrators
-
-### **🎯 Standards Alignment System**  
-- **CSTA Standards Mapping**: Complete K-12 Computer Science Teachers Association alignment
-- **Common Core Integration**: Mathematics standards for cryptography and STEM content
-- **CTE Career Pathways**: Career and Technical Education cybersecurity track support
-- **Compliance Reporting**: Automated documentation for curriculum review and accreditation
-
-**Access Enhanced Features**: `Cybersecurity/Advanced_Security_Platform/simulation/01_TEACHER_RESOURCES/`
-- `gradebook_system.py` - Complete gradebook with export capabilities
-- `standards_alignment.py` - Comprehensive standards mapping and reporting  
-- `ENHANCED_FEATURES_GUIDE.md` - Complete implementation guide for schools
-
-## 🛡️ Safety & Ethics
-
-This platform is designed for **educational purposes only**. All tools and simulations are:
-- Safe and controlled environments
-- Focused on defensive cybersecurity
-- Promoting ethical hacking practices
-- Compliant with educational standards
-
-## 📋 Requirements
-
-- Python 3.12 or higher
-- Windows, macOS, or Linux operating system
-- Basic understanding of computer systems
-- Supervised use recommended for younger students
-
-## 🤝 Contributing
-
-This is an educational resource developed for high school cybersecurity programs. Contributions that enhance the educational value are welcome.
-
-## 📄 License
-
-This educational platform is provided for academic and educational use. Please ensure compliance with your institution's policies and local regulations.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![Educational](https://img.shields.io/badge/purpose-education-green.svg)]()
 
 ---
 
-**Educational Disclaimer**: All tools and demonstrations are designed for learning purposes in controlled environments. Users are responsible for ethical and legal compliance in their educational jurisdiction.
+## 📚 Overview
+
+This repository contains a comprehensive suite of K-12 educational platforms covering six core subject areas, complete with interactive simulations, lesson plans, student activities, and teacher resources. All content is standards-aligned and ready for classroom use.
+
+**Total Content:**
+- 🎓 **6 Educational Domains**
+- 📝 **30+ Comprehensive Lesson Plans**
+- 💻 **15+ Interactive Python Applications**
+- 📖 **25+ Student Workbooks & Activities**
+- 👨‍🏫 **Teacher Resources for K-12**
+- 🎯 **Standards-Aligned** (Common Core, NGSS, C3 Framework, NCSS, NCTM)
+
+---
+
+## 📂 Repository Structure
+
+```
+Cyber-Security-Education/
+│
+├── Educational_Platforms/          # All K-12 subject area platforms
+│   ├── Business_Education/         # Business, Finance, Entrepreneurship
+│   ├── Digital_Arts/               # Drawing, Animation, Multimedia
+│   ├── Language_Arts/              # Reading, Writing, Grammar, Literature
+│   ├── Mathematics/                # K-12 Math with Interactive Studio
+│   ├── Science/                    # Physical, Life, Earth Science (NGSS)
+│   └── Social_Studies/             # History, Geography, Civics, Economics
+│
+├── Tools_and_Utilities/            # Educational tools and utilities
+│   └── Cybersecurity_Tools/        # Security education tools
+│
+├── Documentation/                  # Platform documentation
+│   ├── PROFESSIONAL_DEVELOPMENT_GUIDE.md
+│   ├── SCHOOL_IT_DEPLOYMENT_GUIDE.md
+│   ├── PLATFORM_SUMMARY.md
+│   └── WORKSPACE_ORGANIZATION.md
+│
+├── README.md                       # This file
+└── LICENSE                         # MIT License with educational extensions
+```
+
+---
+
+## 🎓 Educational Platforms
+
+### 1. 📐 Mathematics Platform
+**Standards:** Common Core Math Standards, NCTM Standards  
+**Grade Levels:** K-12  
+
+**Features:**
+- Interactive Math Studio (Python application)
+  - Geometry Constructor
+  - Graphing Calculator
+  - Algebra Solver
+  - Statistics Visualizer
+  - 3D Shape Explorer
+- Comprehensive K-12 lesson plans
+- Multiplication Mastery workbook
+- Fraction Workshop activities
+- Standards alignment documentation
+
+**Quick Start:** `Educational_Platforms/Mathematics/00_START_HERE/QUICK_START_GUIDE.md`
+
+---
+
+### 2. 🔬 Science Platform
+**Standards:** NGSS (Next Generation Science Standards)  
+**Grade Levels:** K-12  
+
+**Features:**
+- Interactive Physics Lab (Python application)
+  - Motion Grapher (kinematic equations)
+  - Force Vector Visualizer
+  - Projectile Motion Calculator
+  - Real-time data visualization
+- NGSS-aligned lesson plans (K-5, 6-8, 9-12)
+- Scientific Method workbook
+- Lab safety guidelines
+- Three dimensions of NGSS (SEPs, DCIs, CCCs)
+
+**Dependencies:** matplotlib, numpy, scipy  
+**Quick Start:** `Educational_Platforms/Science/00_START_HERE/QUICK_START_GUIDE.md`
+
+---
+
+### 3. 🌍 Social Studies Platform
+**Standards:** C3 Framework, NCSS Standards  
+**Grade Levels:** K-12  
+
+**Features:**
+- Government Simulator (Python application)
+  - Legislative Branch: Bill creation & voting
+  - Judicial Branch: Supreme Court cases
+  - Executive Branch overview
+  - Educational content on three branches
+- Economics Market Simulator (Python application)
+  - Supply and demand dynamics
+  - Business management game
+  - Real-world economic scenarios
+  - Interactive market visualization
+- Comprehensive K-12 lesson plans (History, Geography, Civics, Economics)
+- Historical Analysis workbook
+- Primary source analysis tools
+- DBQ (Document-Based Questions) practice
+
+**Quick Start:** `Educational_Platforms/Social_Studies/00_START_HERE/QUICK_START_GUIDE.md`
+
+---
+
+### 4. 📝 Language Arts Platform
+**Standards:** Common Core ELA Standards  
+**Grade Levels:** K-12  
+
+**Features:**
+- Reading Comprehension tools
+- Creative Writing studio
+- Grammar & Vocabulary builder
+- Poetry Analysis tools
+- Literary Analysis frameworks
+- Teacher resources with lesson plans
+
+**Quick Start:** `Educational_Platforms/Language_Arts/`
+
+---
+
+### 5. 🎨 Digital Arts Platform
+**Standards:** National Core Arts Standards  
+**Grade Levels:** 6-12  
+
+**Features:**
+- Drawing and Design tools
+- Animation Studio
+- Multimedia Creation suite
+- Graphic Design applications
+- Web Design tutorials
+- Teacher resources
+
+**Quick Start:** `Educational_Platforms/Digital_Arts/`
+
+---
+
+### 6. 💼 Business Education Platform
+**Standards:** National Standards for Business Education  
+**Grade Levels:** 9-12  
+
+**Features:**
+- Business simulations
+- Entrepreneurship activities
+- Financial literacy tools
+- Marketing and management resources
+- Teacher lesson plans
+
+**Quick Start:** `Educational_Platforms/Business_Education/00_START_HERE/QUICK_START_GUIDE.md`
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+**For Interactive Applications:**
+- Python 3.8 or higher
+- tkinter (usually included with Python)
+- Additional packages for Science platform:
+  ```bash
+  pip install matplotlib numpy scipy
+  ```
+
+### Installation
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/yourusername/Cyber-Security-Education.git
+   cd Cyber-Security-Education
+   ```
+
+2. **Install Python dependencies:**
+   ```bash
+   pip install matplotlib numpy scipy
+   ```
+
+3. **Navigate to a platform and start learning!**
+
+### Running Interactive Applications
+
+**Mathematics:**
+```bash
+cd Educational_Platforms/Mathematics/03_SIMULATIONS
+python interactive_math_studio.py
+```
+
+**Science:**
+```bash
+cd Educational_Platforms/Science/03_SIMULATIONS_AND_LABS
+python interactive_physics_lab.py
+```
+
+**Social Studies:**
+```bash
+cd Educational_Platforms/Social_Studies/03_SIMULATIONS_AND_GAMES
+python government_simulator.py
+python economics_market_simulator.py
+```
+
+---
+
+## 🎯 Standards Alignment
+
+- **Mathematics:** Common Core Math Standards, NCTM Standards
+- **Science:** NGSS (Next Generation Science Standards)
+- **Social Studies:** C3 Framework, NCSS Standards
+- **Language Arts:** Common Core ELA Standards
+- **Digital Arts:** National Core Arts Standards
+- **Business Education:** National Standards for Business Education
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License with Educational Use Extensions**.
+
+✅ Free for Educational Use  
+✅ Free for Teachers and Students  
+✅ Modify and Adapt for Your Classroom  
+
+See [LICENSE](LICENSE) for full details.
+
+---
+
+## 📞 Support
+
+For documentation, see the `Documentation/` folder.  
+For issues or questions, open a GitHub issue.
+
+---
+
+*Built with ❤️ for educators, by educators*
+
+**Last Updated:** October 1, 2025
