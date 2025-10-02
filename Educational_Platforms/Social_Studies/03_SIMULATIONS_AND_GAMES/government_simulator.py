@@ -42,6 +42,12 @@ class GovernmentSimulator:
         self.public_approval = 50
         self.budget = 1000000000  # 1 billion
         self.turn = 1
+        self.bills_passed = 0
+        self.bills_failed = 0
+        self.vetoes_issued = 0
+        self.executive_orders = 0
+        self.cases_decided = 0
+        self.achievements = []
         
         # Initialize UI
         self.create_main_menu()
@@ -73,6 +79,7 @@ class GovernmentSimulator:
             ("🏛️ Legislative Branch", "Congress: Make Laws", self.start_legislative, "#1e3a8a"),
             ("⚖️ Judicial Branch", "Supreme Court: Interpret Laws", self.start_judicial, "#7c3aed"),
             ("🏢 Executive Branch", "President: Execute Laws", self.start_executive, "#dc2626"),
+            ("🗳️ Election Simulator", "Run a Presidential Campaign", self.start_election, "#f59e0b"),
             ("📚 Learn About Government", "Educational Resources", self.show_education, "#16a34a"),
         ]
         
@@ -94,6 +101,146 @@ class GovernmentSimulator:
         tk.Button(menu_frame, text="Exit", command=self.root.quit,
                  font=("Arial", 12), bg=self.neutral_color, fg="white",
                  cursor="hand2", padx=30, pady=10).pack(pady=20)
+        
+        # Save/Load buttons
+        save_frame = tk.Frame(menu_frame, bg=self.bg_color)
+        save_frame.pack(pady=10)
+        
+        tk.Button(save_frame, text="💾 Save Game", command=self.save_game,
+                 font=("Arial", 11), bg="#10b981", fg="white",
+                 cursor="hand2", padx=20, pady=8).pack(side="left", padx=5)
+        
+        tk.Button(save_frame, text="📁 Load Game", command=self.load_game,
+                 font=("Arial", 11), bg="#3b82f6", fg="white",
+                 cursor="hand2", padx=20, pady=8).pack(side="left", padx=5)
+        
+        tk.Button(save_frame, text="🏆 Achievements", command=self.show_achievements,
+                 font=("Arial", 11), bg="#f59e0b", fg="white",
+                 cursor="hand2", padx=20, pady=8).pack(side="left", padx=5)
+    
+    def save_game(self):
+        """Save game state to file"""
+        game_state = {
+            'player_role': self.player_role,
+            'bills': self.bills,
+            'laws': self.laws,
+            'court_cases': self.court_cases,
+            'public_approval': self.public_approval,
+            'budget': self.budget,
+            'turn': self.turn,
+            'bills_passed': self.bills_passed,
+            'bills_failed': self.bills_failed,
+            'vetoes_issued': self.vetoes_issued,
+            'executive_orders': self.executive_orders,
+            'cases_decided': self.cases_decided,
+            'achievements': self.achievements
+        }
+        
+        try:
+            with open('government_simulator_save.json', 'w') as f:
+                json.dump(game_state, f, indent=2)
+            messagebox.showinfo("Save Successful", "Game saved successfully!")
+        except Exception as e:
+            messagebox.showerror("Save Failed", f"Failed to save game: {str(e)}")
+    
+    def load_game(self):
+        """Load game state from file"""
+        try:
+            with open('government_simulator_save.json', 'r') as f:
+                game_state = json.load(f)
+            
+            self.player_role = game_state.get('player_role')
+            self.bills = game_state.get('bills', [])
+            self.laws = game_state.get('laws', [])
+            self.court_cases = game_state.get('court_cases', [])
+            self.public_approval = game_state.get('public_approval', 50)
+            self.budget = game_state.get('budget', 1000000000)
+            self.turn = game_state.get('turn', 1)
+            self.bills_passed = game_state.get('bills_passed', 0)
+            self.bills_failed = game_state.get('bills_failed', 0)
+            self.vetoes_issued = game_state.get('vetoes_issued', 0)
+            self.executive_orders = game_state.get('executive_orders', 0)
+            self.cases_decided = game_state.get('cases_decided', 0)
+            self.achievements = game_state.get('achievements', [])
+            
+            messagebox.showinfo("Load Successful", "Game loaded successfully!")
+            
+            # Return to appropriate interface
+            if self.player_role == "Congress":
+                self.create_legislative_interface()
+            elif self.player_role == "Supreme Court":
+                self.create_judicial_interface()
+            elif self.player_role == "President":
+                self.create_executive_interface()
+            else:
+                self.create_main_menu()
+                
+        except FileNotFoundError:
+            messagebox.showwarning("No Save File", "No saved game found!")
+        except Exception as e:
+            messagebox.showerror("Load Failed", f"Failed to load game: {str(e)}")
+    
+    def check_achievements(self):
+        """Check and award achievements"""
+        new_achievements = []
+        
+        # Legislative achievements
+        if len(self.laws) >= 5 and "Lawmaker" not in self.achievements:
+            new_achievements.append("Lawmaker")
+        if len(self.laws) >= 10 and "Legislative Leader" not in self.achievements:
+            new_achievements.append("Legislative Leader")
+        if self.public_approval >= 80 and "Popular Politician" not in self.achievements:
+            new_achievements.append("Popular Politician")
+        
+        # Judicial achievements
+        if self.cases_decided >= 3 and "Justice" not in self.achievements:
+            new_achievements.append("Justice")
+        if self.cases_decided >= 8 and "Chief Justice" not in self.achievements:
+            new_achievements.append("Chief Justice")
+        
+        # Executive achievements
+        if self.vetoes_issued >= 3 and "Veto Power" not in self.achievements:
+            new_achievements.append("Veto Power")
+        if self.executive_orders >= 5 and "Executive Authority" not in self.achievements:
+            new_achievements.append("Executive Authority")
+        
+        # General achievements
+        if self.turn >= 20 and "Experienced Leader" not in self.achievements:
+            new_achievements.append("Experienced Leader")
+        if self.budget >= 2000000000 and "Economic Genius" not in self.achievements:
+            new_achievements.append("Economic Genius")
+        
+        if new_achievements:
+            self.achievements.extend(new_achievements)
+            achievement_text = "🏆 New Achievements Unlocked!\n\n" + "\n".join(f"• {ach}" for ach in new_achievements)
+            messagebox.showinfo("Achievement Unlocked!", achievement_text)
+    
+    def show_achievements(self):
+        """Display achievements"""
+        ach_win = tk.Toplevel(self.root)
+        ach_win.title("Achievements")
+        ach_win.geometry("500x400")
+        ach_win.configure(bg="white")
+        
+        tk.Label(ach_win, text="🏆 Achievements", font=("Arial", 18, "bold"),
+                bg="white", fg=self.primary_color).pack(pady=15)
+        
+        if not self.achievements:
+            tk.Label(ach_win, text="No achievements unlocked yet.\n\nKeep playing to earn achievements!",
+                    font=("Arial", 12), bg="white").pack(pady=20)
+        else:
+            achievements_frame = tk.Frame(ach_win, bg="white")
+            achievements_frame.pack(fill="both", expand=True, padx=20, pady=10)
+            
+            for achievement in self.achievements:
+                ach_frame = tk.Frame(achievements_frame, bg="#fef3c7", relief="solid", bd=1)
+                ach_frame.pack(fill="x", pady=5)
+                tk.Label(ach_frame, text=f"🏆 {achievement}", font=("Arial", 12, "bold"),
+                        bg="#fef3c7").pack(pady=8, padx=15)
+        
+        tk.Button(ach_win, text="Close", command=ach_win.destroy,
+                 font=("Arial", 12, "bold"), bg=self.primary_color, fg="white",
+                 cursor="hand2", padx=20, pady=8).pack(pady=15)
     
     def start_legislative(self):
         """Start Legislative Branch simulation"""
@@ -300,22 +447,33 @@ class GovernmentSimulator:
                                                 height=6, wrap=tk.WORD)
         details_text.pack(fill="both", expand=True, padx=10, pady=5)
         
-        def update_details():
+        def update_details(*args):
             bill = pending[selected_bill.get()]
             details_text.delete("1.0", tk.END)
             details_text.insert("1.0", bill['description'])
         
         # Update details when selection changes
-        for i in range(len(pending)):
-            vote_win.nametowidget(f".!frame{i+2}.!radiobutton").configure(command=update_details)
+        selected_bill.trace_add('write', update_details)
         
         update_details()
         
         def cast_vote(vote_type):
             bill = pending[selected_bill.get()]
             
-            # Simulate congressional vote
-            votes_for = random.randint(200, 300)
+            # Simulate congressional vote with player influence
+            base_votes_for = random.randint(180, 250)
+            base_votes_against = 435 - base_votes_for
+            
+            # Player's vote influences the outcome
+            if vote_type == "yes":
+                votes_for = base_votes_for + random.randint(10, 30)  # Player support boosts the bill
+                votes_against = 435 - votes_for
+            else:
+                votes_for = base_votes_for - random.randint(10, 30)  # Player opposition hurts the bill
+                votes_against = 435 - votes_for
+            
+            # Ensure reasonable bounds
+            votes_for = max(150, min(285, votes_for))
             votes_against = 435 - votes_for
             
             bill['votes_for'] = votes_for
@@ -340,6 +498,7 @@ class GovernmentSimulator:
             self.update_congress_info()
             vote_win.destroy()
             self.show_bills_tab("pending")
+            self.check_achievements()
         
         # Vote buttons
         btn_frame = tk.Frame(vote_win, bg="white")
@@ -408,15 +567,74 @@ class GovernmentSimulator:
                                      "Declare war?")
         if result:
             self.public_approval -= 20
+            self.budget -= 100000000000  # 100 billion for war
             messagebox.showwarning("War Declared",
-                                  "War has been declared. Public approval decreased by 20%.")
+                                  "War has been declared. Public approval decreased by 20%.\n"
+                                  f"War funding: $100 billion deducted from budget.")
             self.update_congress_info()
     
     def override_veto(self):
         """Override presidential veto"""
-        messagebox.showinfo("Veto Override",
-                          "Congress can override a presidential veto with a 2/3 majority vote in both chambers.\n\n"
-                          "This demonstrates the system of checks and balances!")
+        vetoed_bills = [b for b in self.bills if b.get('status') == 'vetoed']
+        
+        if not vetoed_bills:
+            messagebox.showinfo("No Vetoes", "There are no vetoed bills to override.")
+            return
+        
+        override_win = tk.Toplevel(self.root)
+        override_win.title("Override Presidential Veto")
+        override_win.geometry("600x400")
+        override_win.configure(bg="white")
+        
+        tk.Label(override_win, text="Override Presidential Veto", font=("Arial", 16, "bold"),
+                bg="white", fg=self.primary_color).pack(pady=15)
+        
+        bill = vetoed_bills[0]
+        
+        tk.Label(override_win, text=f"Vetoed Bill: {bill['title']}", font=("Arial", 13, "bold"),
+                bg="white").pack(pady=10)
+        
+        info_frame = tk.Frame(override_win, bg="#f3f4f6", relief="solid", bd=1)
+        info_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        
+        info_text = f"Category: {bill['category']}\n"
+        info_text += f"Funding: ${bill['funding']:,.0f}\n"
+        info_text += f"Description: {bill['description'][:200]}..."
+        
+        tk.Label(info_frame, text=info_text, font=("Arial", 11),
+                bg="#f3f4f6", justify="left", wraplength=500).pack(padx=15, pady=15)
+        
+        tk.Label(override_win, text="Congress needs 2/3 majority to override veto.",
+                font=("Arial", 11), bg="white").pack(pady=10)
+        
+        def attempt_override():
+            # Simulate congressional override vote
+            votes_for = random.randint(250, 400)
+            votes_against = 435 - votes_for
+            
+            if votes_for >= 290:  # 2/3 of 435 ≈ 290
+                bill['status'] = 'passed'
+                self.laws.append(bill)
+                self.bills.remove(bill)
+                self.budget -= bill['funding']
+                self.public_approval += random.randint(-5, 5)
+                messagebox.showinfo("Veto Overridden!", 
+                                  f"Congress successfully overrode the veto!\n\n"
+                                  f"Vote: {votes_for} for, {votes_against} against\n\n"
+                                  f"'{bill['title']}' is now law!")
+            else:
+                messagebox.showinfo("Veto Sustained",
+                                  f"Veto sustained. Not enough votes to override.\n\n"
+                                  f"Vote: {votes_for} for, {votes_against} against")
+            
+            self.turn += 1
+            self.update_congress_info()
+            override_win.destroy()
+            self.show_bills_tab("passed")
+        
+        tk.Button(override_win, text="Attempt Override Vote", command=attempt_override,
+                 font=("Arial", 13, "bold"), bg=self.primary_color, fg="white",
+                 cursor="hand2", pady=12, padx=30).pack(pady=20)
     
     def start_judicial(self):
         """Start Judicial Branch simulation"""
@@ -470,6 +688,51 @@ class GovernmentSimulator:
                 'arguments_for': '1st Amendment protects symbolic speech. Students don\'t lose rights at school gate.',
                 'arguments_against': 'Schools need maintain order. Protest could disrupt education.',
                 'ruling': 'Students have free speech rights unless it substantially disrupts school.'
+            },
+            {
+                'name': 'Gideon v. Wainwright',
+                'year': 1963,
+                'question': 'Does the Constitution require states to provide attorneys to defendants who cannot afford them?',
+                'background': 'Clarence Gideon was charged with breaking and entering but could not afford a lawyer. He represented himself and was convicted.',
+                'arguments_for': '6th Amendment guarantees right to counsel. Fair trial impossible without legal representation.',
+                'arguments_against': 'States should have flexibility. Not all cases require attorney. Too expensive.',
+                'ruling': 'States must provide attorneys to defendants who cannot afford them in criminal cases.'
+            },
+            {
+                'name': 'Marbury v. Madison',
+                'year': 1803,
+                'question': 'Can the Supreme Court declare laws unconstitutional?',
+                'background': 'William Marbury sued to receive his commission as a justice of the peace. The Court had to decide if it could order the executive branch to act.',
+                'arguments_for': 'Constitution is supreme law. Courts must interpret law. Judicial independence is essential.',
+                'arguments_against': 'Constitution doesn\'t explicitly grant this power. Unelected judges shouldn\'t overrule elected officials.',
+                'ruling': 'Established judicial review: Supreme Court can declare laws unconstitutional. Foundational case for judicial power.'
+            },
+            {
+                'name': 'Roe v. Wade',
+                'year': 1973,
+                'question': 'Does the Constitution protect a woman\'s right to choose to have an abortion?',
+                'background': 'Norma McCorvey (Jane Roe) challenged Texas law criminalizing abortion except to save mother\'s life.',
+                'arguments_for': '14th Amendment protects privacy and personal liberty. Government intrusion on personal medical decisions.',
+                'arguments_against': 'State interest in protecting potential life. Not explicitly mentioned in Constitution.',
+                'ruling': 'Constitution protects right to abortion, but states can regulate after certain point. (Note: Overturned in 2022)'
+            },
+            {
+                'name': 'New Jersey v. T.L.O.',
+                'year': 1985,
+                'question': 'Do school officials need a warrant to search students?',
+                'background': 'A student was caught smoking and her purse was searched, revealing drug paraphernalia. She argued it violated 4th Amendment.',
+                'arguments_for': 'Students have constitutional rights. Searches require probable cause and warrant.',
+                'arguments_against': 'Schools need maintain order and safety. Lower standard appropriate in school setting.',
+                'ruling': 'School officials can search without warrant if there are reasonable grounds. Lower standard than police searches.'
+            },
+            {
+                'name': 'United States v. Nixon',
+                'year': 1974,
+                'question': 'Must the President comply with a court order to turn over evidence?',
+                'background': 'President Nixon refused to release Watergate tape recordings, claiming executive privilege.',
+                'arguments_for': 'No one is above the law. Courts need evidence for fair trials. Limited executive privilege.',
+                'arguments_against': 'Presidential communications must be confidential. Executive privilege protects separation of powers.',
+                'ruling': 'President must comply with court orders. Executive privilege exists but is not absolute. Nixon resigned shortly after.'
             }
         ]
         
@@ -575,15 +838,570 @@ class GovernmentSimulator:
     
     def start_executive(self):
         """Start Executive Branch simulation"""
-        messagebox.showinfo("Executive Branch",
-                          "⚖️ As President, you:\n\n"
-                          "• Enforce laws passed by Congress\n"
-                          "• Command the armed forces\n"
-                          "• Conduct foreign policy\n"
-                          "• Appoint federal judges and cabinet members\n"
-                          "• Veto or sign legislation\n"
-                          "• Issue executive orders\n\n"
-                          "This simulation is coming soon!")
+        self.player_role = "President"
+        self.create_executive_interface()
+    
+    def create_executive_interface(self):
+        """Create Presidential simulation interface"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        
+        # Header
+        header = tk.Frame(self.root, bg=self.secondary_color, height=70)
+        header.pack(fill="x")
+        
+        tk.Label(header, text="🏢 Office of the President - Executive Branch",
+                font=("Arial", 20, "bold"), bg=self.secondary_color, fg="white").pack(side="left", padx=20, pady=15)
+        
+        tk.Button(header, text="← Main Menu", command=self.create_main_menu,
+                 bg="white", fg=self.secondary_color, font=("Arial", 11, "bold"),
+                 cursor="hand2", padx=15, pady=5).pack(side="right", padx=20)
+        
+        # Main content
+        content = tk.Frame(self.root, bg=self.bg_color)
+        content.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Left panel - Presidential Actions
+        left_panel = tk.Frame(content, bg="white", relief="solid", bd=2, width=400)
+        left_panel.pack(side="left", fill="y", padx=(0, 10))
+        left_panel.pack_propagate(False)
+        
+        tk.Label(left_panel, text="Presidential Powers", font=("Arial", 16, "bold"),
+                bg="white", fg=self.secondary_color).pack(pady=15)
+        
+        # Action buttons
+        actions = [
+            ("✍️ Sign/Veto Legislation", self.sign_or_veto),
+            ("📋 Issue Executive Order", self.issue_executive_order),
+            ("👥 Appoint Cabinet Member", self.appoint_cabinet),
+            ("⚖️ Nominate Supreme Court Justice", self.nominate_justice),
+            ("🌍 Conduct Foreign Policy", self.foreign_policy),
+            ("🎖️ Military Command", self.military_action),
+            ("🗳️ Campaign for Re-election", self.campaign),
+            ("📺 Press Conference", self.press_conference),
+        ]
+        
+        for action_text, command in actions:
+            tk.Button(left_panel, text=action_text, command=command,
+                     font=("Arial", 11, "bold"), bg=self.secondary_color, fg="white",
+                     cursor="hand2", relief="flat", pady=10).pack(fill="x", padx=15, pady=3)
+        
+        # Info display
+        info_frame = tk.Frame(left_panel, bg="#fee2e2", relief="solid", bd=1)
+        info_frame.pack(fill="x", padx=15, pady=15)
+        
+        if not hasattr(self, 'president_info'):
+            self.president_info = tk.StringVar()
+        self.update_president_info()
+        tk.Label(info_frame, textvariable=self.president_info, font=("Arial", 10),
+                bg="#fee2e2", justify="left", anchor="w").pack(padx=10, pady=10, fill="x")
+        
+        # Right panel - Actions Log
+        right_panel = tk.Frame(content, bg="white", relief="solid", bd=2)
+        right_panel.pack(side="right", fill="both", expand=True)
+        
+        tk.Label(right_panel, text="📜 Presidential Actions Log", font=("Arial", 14, "bold"),
+                bg="white", fg=self.secondary_color).pack(pady=10)
+        
+        if not hasattr(self, 'exec_display') or not self.exec_display.winfo_exists():
+            self.exec_display = scrolledtext.ScrolledText(right_panel, wrap=tk.WORD,
+                                                          font=("Arial", 11), height=25)
+            self.exec_display.pack(fill="both", expand=True, padx=10, pady=10)
+            self.exec_display.insert("1.0", "Welcome to the Oval Office!\n\n"
+                                           "As President, you have executive powers to enforce laws, "
+                                           "conduct foreign policy, and lead the nation.\n\n"
+                                           "Your actions will be logged here.\n" + "="*60 + "\n\n")
+        else:
+            self.exec_display.pack(fill="both", expand=True, padx=10, pady=10)
+    
+    def update_president_info(self):
+        """Update presidential info display"""
+        info = f"Turn: {self.turn}\n"
+        info += f"Public Approval: {self.public_approval}%\n"
+        info += f"Laws to Review: {len([b for b in self.bills if b.get('status') == 'passed'])}\n"
+        info += f"Federal Budget: ${self.budget:,.0f}\n"
+        info += f"Days in Office: {self.turn * 30}"
+        if hasattr(self, 'president_info'):
+            self.president_info.set(info)
+    
+    def log_executive_action(self, text):
+        """Safely log executive action"""
+        if hasattr(self, 'exec_display') and self.exec_display.winfo_exists():
+            self.exec_display.insert(tk.END, text)
+    
+    def sign_or_veto(self):
+        """Sign or veto legislation"""
+        passed_bills = [b for b in self.bills if b.get('status') == 'passed']
+        
+        if not passed_bills:
+            messagebox.showinfo("No Legislation", "No bills have been passed by Congress for your review.")
+            return
+        
+        veto_win = tk.Toplevel(self.root)
+        veto_win.title("Sign or Veto Legislation")
+        veto_win.geometry("700x500")
+        veto_win.configure(bg="white")
+        
+        tk.Label(veto_win, text="Review Congressional Legislation", font=("Arial", 16, "bold"),
+                bg="white", fg=self.secondary_color).pack(pady=15)
+        
+        bill = passed_bills[0]
+        
+        tk.Label(veto_win, text=f"Bill: {bill['title']}", font=("Arial", 13, "bold"),
+                bg="white").pack(pady=10)
+        
+        info_frame = tk.Frame(veto_win, bg="#f3f4f6", relief="solid", bd=1)
+        info_frame.pack(fill="both", expand=True, padx=20, pady=10)
+        
+        info_text = f"Category: {bill['category']}\n"
+        info_text += f"Funding Required: ${bill['funding']:,.0f}\n"
+        info_text += f"Congressional Vote: {bill.get('votes_for', 0)} For, {bill.get('votes_against', 0)} Against\n\n"
+        info_text += f"Description:\n{bill['description']}"
+        
+        tk.Label(info_frame, text=info_text, font=("Arial", 11),
+                bg="#f3f4f6", justify="left", wraplength=600).pack(padx=15, pady=15)
+        
+        def sign_bill():
+            bill['status'] = 'signed'
+            self.bills.remove(bill)
+            self.laws.append(bill)
+            self.public_approval += random.randint(-3, 8)
+            log_text = f"✅ SIGNED: {bill['title']}\n"
+            log_text += f"   Public approval: {self.public_approval}%\n"
+            log_text += "-" * 60 + "\n\n"
+            self.log_executive_action(log_text)
+            messagebox.showinfo("Bill Signed", f"You have signed '{bill['title']}' into law!")
+            self.turn += 1
+            self.update_president_info()
+            veto_win.destroy()
+            self.check_achievements()
+        
+        def veto_bill():
+            bill['status'] = 'vetoed'
+            self.bills.remove(bill)
+            self.public_approval += random.randint(-8, 3)
+            log_text = f"❌ VETOED: {bill['title']}\n"
+            log_text += f"   Congress can override with 2/3 vote\n"
+            log_text += f"   Public approval: {self.public_approval}%\n"
+            log_text += "-" * 60 + "\n\n"
+            self.log_executive_action(log_text)
+            messagebox.showinfo("Bill Vetoed", "You have vetoed this legislation. "
+                              "Congress may attempt to override your veto.")
+            self.turn += 1
+            self.update_president_info()
+            veto_win.destroy()
+        
+        btn_frame = tk.Frame(veto_win, bg="white")
+        btn_frame.pack(pady=15)
+        
+        tk.Button(btn_frame, text="✍️ Sign Into Law", command=sign_bill,
+                 font=("Arial", 12, "bold"), bg=self.success_color, fg="white",
+                 cursor="hand2", padx=30, pady=12).pack(side="left", padx=10)
+        
+        tk.Button(btn_frame, text="❌ Veto Bill", command=veto_bill,
+                 font=("Arial", 12, "bold"), bg=self.secondary_color, fg="white",
+                 cursor="hand2", padx=30, pady=12).pack(side="left", padx=10)
+    
+    def issue_executive_order(self):
+        """Issue executive order"""
+        order_win = tk.Toplevel(self.root)
+        order_win.title("Issue Executive Order")
+        order_win.geometry("600x450")
+        order_win.configure(bg="white")
+        
+        tk.Label(order_win, text="Issue Executive Order", font=("Arial", 16, "bold"),
+                bg="white", fg=self.secondary_color).pack(pady=15)
+        
+        tk.Label(order_win, text="Executive orders are directives that manage federal operations.\n"
+                                "They have the force of law but can be challenged in court.",
+                font=("Arial", 10), bg="white", wraplength=500).pack(pady=10)
+        
+        tk.Label(order_win, text="Order Title:", font=("Arial", 12, "bold"),
+                bg="white").pack(pady=(10, 5))
+        title_entry = tk.Entry(order_win, font=("Arial", 11), width=50)
+        title_entry.pack()
+        
+        tk.Label(order_win, text="Order Description:", font=("Arial", 12, "bold"),
+                bg="white").pack(pady=(15, 5))
+        desc_text = scrolledtext.ScrolledText(order_win, font=("Arial", 11),
+                                             width=60, height=8, wrap=tk.WORD)
+        desc_text.pack(padx=20)
+        
+        def submit_order():
+            title = title_entry.get().strip()
+            desc = desc_text.get("1.0", tk.END).strip()
+            
+            if not title or not desc:
+                messagebox.showwarning("Incomplete", "Please fill in all fields!")
+                return
+            
+            self.public_approval += random.randint(-5, 5)
+            log_text = f"📋 EXECUTIVE ORDER: {title}\n"
+            log_text += f"   {desc[:100]}...\n"
+            log_text += f"   Public approval: {self.public_approval}%\n"
+            log_text += "-" * 60 + "\n\n"
+            self.log_executive_action(log_text)
+            
+            messagebox.showinfo("Order Issued", f"Executive Order '{title}' has been issued!")
+            self.turn += 1
+            self.update_president_info()
+            order_win.destroy()
+        
+        tk.Button(order_win, text="Issue Order", command=submit_order,
+                 font=("Arial", 13, "bold"), bg=self.secondary_color, fg="white",
+                 cursor="hand2", pady=12, padx=30).pack(pady=20)
+    
+    def appoint_cabinet(self):
+        """Appoint cabinet member"""
+        positions = ["Secretary of State", "Secretary of Defense", "Attorney General",
+                    "Secretary of Treasury", "Secretary of Education"]
+        position = random.choice(positions)
+        
+        result = messagebox.askyesno("Cabinet Appointment",
+                                     f"Appoint a new {position}?\n\n"
+                                     "Cabinet appointments require Senate confirmation.")
+        if result:
+            approved = random.choice([True, True, True, False])  # 75% approval rate
+            if approved:
+                log_text = f"👥 APPOINTED: {position}\n"
+                log_text += f"   Senate confirmed appointment\n"
+                log_text += "-" * 60 + "\n\n"
+                self.log_executive_action(log_text)
+                messagebox.showinfo("Confirmed", "The Senate has confirmed your appointment!")
+            else:
+                messagebox.showwarning("Rejected", "The Senate rejected your appointment.")
+            self.turn += 1
+            self.update_president_info()
+    
+    def nominate_justice(self):
+        """Nominate Supreme Court justice"""
+        result = messagebox.askyesno("Supreme Court Nomination",
+                                     "Nominate a Supreme Court Justice?\n\n"
+                                     "This is a lifetime appointment requiring Senate confirmation.\n"
+                                     "Justices can serve for decades and shape constitutional law.")
+        if result:
+            approved = random.choice([True, True, False])  # 67% approval rate
+            if approved:
+                self.public_approval += random.randint(-2, 5)
+                log_text = f"⚖️ NOMINATED: Supreme Court Justice\n"
+                log_text += f"   Senate confirmed after hearings\n"
+                log_text += f"   Public approval: {self.public_approval}%\n"
+                log_text += "-" * 60 + "\n\n"
+                self.log_executive_action(log_text)
+                messagebox.showinfo("Confirmed", "Your nominee has been confirmed to the Supreme Court!")
+            else:
+                self.public_approval -= 3
+                messagebox.showwarning("Rejected", "The Senate rejected your nominee after contentious hearings.")
+            self.turn += 1
+            self.update_president_info()
+    
+    def foreign_policy(self):
+        """Conduct foreign policy"""
+        policies = [
+            ("Negotiate Trade Agreement", 5, 10),
+            ("Sign Peace Treaty", 10, 15),
+            ("Impose Economic Sanctions", -5, 5),
+            ("Host Diplomatic Summit", 3, 8),
+        ]
+        
+        policy = random.choice(policies)
+        result = messagebox.askyesno("Foreign Policy Action",
+                                     f"{policy[0]}\n\n"
+                                     "This will impact international relations and public opinion.\n\n"
+                                     "Proceed?")
+        if result:
+            approval_change = random.randint(policy[1], policy[2])
+            self.public_approval += approval_change
+            log_text = f"🌍 FOREIGN POLICY: {policy[0]}\n"
+            log_text += f"   Public approval change: {approval_change:+d}% (now {self.public_approval}%)\n"
+            log_text += "-" * 60 + "\n\n"
+            self.log_executive_action(log_text)
+            self.turn += 1
+            self.update_president_info()
+    
+    def military_action(self):
+        """Military command decision"""
+        result = messagebox.askyesno("Military Action",
+                                     "⚠️ As Commander-in-Chief, authorize military action?\n\n"
+                                     "Only Congress can declare war, but you can order "
+                                     "military operations.\n\n"
+                                     "This is a serious decision with major consequences.")
+        if result:
+            self.public_approval += random.randint(-15, 10)
+            self.budget -= 50000000000  # 50 billion
+            log_text = f"🎖️ MILITARY ACTION: Authorized operation\n"
+            log_text += f"   Budget impact: -$50 billion\n"
+            log_text += f"   Public approval: {self.public_approval}%\n"
+            log_text += "-" * 60 + "\n\n"
+            self.log_executive_action(log_text)
+            messagebox.showwarning("Action Taken", 
+                                  "Military operation authorized. "
+                                  "Public opinion is divided.")
+            self.turn += 1
+            self.update_president_info()
+    
+    def campaign(self):
+        """Campaign for re-election"""
+        cost = 10000000  # 10 million
+        if self.budget < cost:
+            messagebox.showwarning("Insufficient Funds", "Not enough campaign funds!")
+            return
+        
+        self.budget -= cost
+        approval_gain = random.randint(3, 8)
+        self.public_approval += approval_gain
+        
+        log_text = f"🗳️ CAMPAIGN: Rally and media appearances\n"
+        log_text += f"   Cost: ${cost:,.0f}\n"
+        log_text += f"   Approval gain: +{approval_gain}% (now {self.public_approval}%)\n"
+        log_text += "-" * 60 + "\n\n"
+        self.log_executive_action(log_text)
+        
+        messagebox.showinfo("Campaign Event", 
+                          f"Successful campaign events! Approval increased by {approval_gain}%")
+        self.turn += 1
+        self.update_president_info()
+    
+    def press_conference(self):
+        """Hold press conference"""
+        performance = random.choice(["excellent", "good", "mixed", "poor"])
+        
+        changes = {
+            "excellent": (5, 10),
+            "good": (2, 5),
+            "mixed": (-2, 2),
+            "poor": (-8, -3)
+        }
+        
+        approval_change = random.randint(changes[performance][0], changes[performance][1])
+        self.public_approval += approval_change
+        
+        log_text = f"📺 PRESS CONFERENCE: {performance.title()} performance\n"
+        log_text += f"   Public approval change: {approval_change:+d}% (now {self.public_approval}%)\n"
+        log_text += "-" * 60 + "\n\n"
+        self.log_executive_action(log_text)
+        
+        messagebox.showinfo("Press Conference", 
+                          f"The press conference went {performance}.\n"
+                          f"Approval rating: {approval_change:+d}%")
+        self.turn += 1
+        self.update_president_info()
+    
+    def start_election(self):
+        """Start Election Simulator"""
+        for widget in self.root.winfo_children():
+            widget.destroy()
+        
+        # Election state
+        self.campaign_funds = 100000000  # 100 million
+        self.electoral_votes = 0
+        self.states_won = []
+        self.debate_score = 0
+        
+        # Header
+        header = tk.Frame(self.root, bg="#f59e0b", height=70)
+        header.pack(fill="x")
+        
+        tk.Label(header, text="🗳️ Presidential Election Simulator",
+                font=("Arial", 20, "bold"), bg="#f59e0b", fg="white").pack(side="left", padx=20, pady=15)
+        
+        tk.Button(header, text="← Main Menu", command=self.create_main_menu,
+                 bg="white", fg="#f59e0b", font=("Arial", 11, "bold"),
+                 cursor="hand2", padx=15, pady=5).pack(side="right", padx=20)
+        
+        content = tk.Frame(self.root, bg=self.bg_color)
+        content.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Info panel
+        info_panel = tk.Frame(content, bg="white", relief="solid", bd=2)
+        info_panel.pack(fill="x", pady=(0, 10))
+        
+        tk.Label(info_panel, text="Campaign to Win 270 Electoral Votes!",
+                font=("Arial", 14, "bold"), bg="white", fg="#f59e0b").pack(pady=10)
+        
+        self.election_info = tk.StringVar()
+        self.update_election_info()
+        tk.Label(info_panel, textvariable=self.election_info, font=("Arial", 11),
+                bg="white", justify="center").pack(pady=10)
+        
+        # Campaign actions
+        action_frame = tk.Frame(content, bg="white", relief="solid", bd=2)
+        action_frame.pack(fill="both", expand=True)
+        
+        tk.Label(action_frame, text="Campaign Actions", font=("Arial", 16, "bold"),
+                bg="white", fg="#f59e0b").pack(pady=15)
+        
+        # State buttons
+        states_frame = tk.Frame(action_frame, bg="white")
+        states_frame.pack(pady=10, padx=20, fill="both", expand=True)
+        
+        swing_states = [
+            ("Florida", 30), ("Pennsylvania", 19), ("Ohio", 17),
+            ("Michigan", 15), ("Georgia", 16), ("North Carolina", 16),
+            ("Arizona", 11), ("Wisconsin", 10), ("Nevada", 6)
+        ]
+        
+        tk.Label(states_frame, text="Campaign in Swing States:",
+                font=("Arial", 13, "bold"), bg="white").pack(pady=10)
+        
+        for state, ev in swing_states:
+            state_frame = tk.Frame(states_frame, bg="#fef3c7", relief="solid", bd=1)
+            state_frame.pack(fill="x", padx=50, pady=3)
+            
+            tk.Label(state_frame, text=f"{state} ({ev} electoral votes)",
+                    font=("Arial", 11, "bold"), bg="#fef3c7", anchor="w").pack(side="left", padx=15, pady=8)
+            
+            tk.Button(state_frame, text="Campaign Here ($10M)",
+                     command=lambda s=state, e=ev: self.campaign_in_state(s, e),
+                     font=("Arial", 10, "bold"), bg="#f59e0b", fg="white",
+                     cursor="hand2", padx=15, pady=5).pack(side="right", padx=10)
+        
+        # Other actions
+        other_frame = tk.Frame(action_frame, bg="white")
+        other_frame.pack(pady=15)
+        
+        tk.Button(other_frame, text="📺 Participate in Debate",
+                 command=self.participate_in_debate,
+                 font=("Arial", 12, "bold"), bg="#3b82f6", fg="white",
+                 cursor="hand2", padx=20, pady=10).pack(pady=5)
+        
+        tk.Button(other_frame, text="📢 National Ad Campaign ($20M)",
+                 command=self.national_ad_campaign,
+                 font=("Arial", 12, "bold"), bg="#8b5cf6", fg="white",
+                 cursor="hand2", padx=20, pady=10).pack(pady=5)
+        
+        tk.Button(other_frame, text="🎯 Check Election Results",
+                 command=self.check_election_results,
+                 font=("Arial", 12, "bold"), bg=self.success_color, fg="white",
+                 cursor="hand2", padx=20, pady=10).pack(pady=5)
+    
+    def update_election_info(self):
+        """Update election info"""
+        info = f"Campaign Funds: ${self.campaign_funds:,.0f} | "
+        info += f"Electoral Votes Won: {self.electoral_votes}/270 | "
+        info += f"States Won: {len(self.states_won)}"
+        self.election_info.set(info)
+    
+    def campaign_in_state(self, state, electoral_votes):
+        """Campaign in a specific state"""
+        cost = 10000000  # 10 million
+        
+        if self.campaign_funds < cost:
+            messagebox.showwarning("Insufficient Funds", "Not enough campaign funds!")
+            return
+        
+        if state in self.states_won:
+            messagebox.showinfo("Already Won", f"You already won {state}!")
+            return
+        
+        self.campaign_funds -= cost
+        
+        # Chance to win based on debate performance and spending
+        win_chance = 0.5 + (self.debate_score * 0.1)
+        
+        if random.random() < win_chance:
+            self.states_won.append(state)
+            self.electoral_votes += electoral_votes
+            messagebox.showinfo("Victory!", 
+                              f"🎉 You won {state}!\n\n"
+                              f"Gained {electoral_votes} electoral votes!\n"
+                              f"Total: {self.electoral_votes}/270")
+        else:
+            messagebox.showinfo("Lost State", 
+                              f"You lost {state} to your opponent.\n"
+                              f"Consider more campaign events or debates.")
+        
+        self.update_election_info()
+    
+    def participate_in_debate(self):
+        """Participate in presidential debate"""
+        debate_win = tk.Toplevel(self.root)
+        debate_win.title("Presidential Debate")
+        debate_win.geometry("700x500")
+        debate_win.configure(bg="white")
+        
+        tk.Label(debate_win, text="📺 Presidential Debate", font=("Arial", 18, "bold"),
+                bg="white", fg="#f59e0b").pack(pady=15)
+        
+        questions = [
+            "What is your plan for the economy?",
+            "How will you address climate change?",
+            "What is your foreign policy vision?",
+            "How will you improve healthcare?",
+            "What is your education policy?"
+        ]
+        
+        question = random.choice(questions)
+        
+        tk.Label(debate_win, text=f"Debate Question:\n\n\"{question}\"",
+                font=("Arial", 13), bg="white", wraplength=600).pack(pady=20)
+        
+        tk.Label(debate_win, text="Your Response:", font=("Arial", 12, "bold"),
+                bg="white").pack(pady=(20, 5))
+        
+        response_text = scrolledtext.ScrolledText(debate_win, font=("Arial", 11),
+                                                 width=70, height=10, wrap=tk.WORD)
+        response_text.pack(padx=20)
+        
+        def submit_response():
+            response = response_text.get("1.0", tk.END).strip()
+            
+            if len(response) < 50:
+                messagebox.showwarning("Too Short", "Your response needs to be more detailed!")
+                return
+            
+            # Score based on length and random performance
+            score = min(3, len(response) // 100 + random.randint(0, 2))
+            self.debate_score += score
+            
+            performance = ["weak", "decent", "good", "strong", "excellent"][min(score, 4)]
+            
+            messagebox.showinfo("Debate Performance",
+                              f"Your debate performance was {performance}!\n\n"
+                              f"This will help your campaign in swing states.\n"
+                              f"Debate Score: +{score}")
+            
+            debate_win.destroy()
+        
+        tk.Button(debate_win, text="Submit Response", command=submit_response,
+                 font=("Arial", 13, "bold"), bg="#f59e0b", fg="white",
+                 cursor="hand2", pady=12, padx=30).pack(pady=20)
+    
+    def national_ad_campaign(self):
+        """Run national ad campaign"""
+        cost = 20000000  # 20 million
+        
+        if self.campaign_funds < cost:
+            messagebox.showwarning("Insufficient Funds", "Not enough campaign funds!")
+            return
+        
+        self.campaign_funds -= cost
+        self.debate_score += 1  # Helps overall campaign
+        
+        messagebox.showinfo("Ad Campaign",
+                          "National ad campaign launched!\n\n"
+                          "Your message is reaching millions of voters.\n"
+                          "This will improve your chances in all states.")
+        
+        self.update_election_info()
+    
+    def check_election_results(self):
+        """Check if player won election"""
+        if self.electoral_votes >= 270:
+            messagebox.showinfo("🎉 ELECTION VICTORY! 🎉",
+                              f"Congratulations!\n\n"
+                              f"You won the presidential election with {self.electoral_votes} electoral votes!\n\n"
+                              f"You carried {len(self.states_won)} states and will be sworn in as President!")
+        elif self.electoral_votes > 0:
+            messagebox.showinfo("Election Status",
+                              f"Current standing:\n\n"
+                              f"Electoral Votes: {self.electoral_votes}/270\n"
+                              f"States Won: {len(self.states_won)}\n\n"
+                              f"Keep campaigning to reach 270!")
+        else:
+            messagebox.showinfo("Election Status",
+                              "You haven't won any states yet!\n\n"
+                              "Participate in debates and campaign in swing states to win electoral votes.")
     
     def show_education(self):
         """Show educational content"""
@@ -685,6 +1503,54 @@ IMPORTANT LATER AMENDMENTS
 The Constitution can be amended, but it's difficult: requires 2/3 of Congress and 3/4 of states.
         """)
         const_text.config(state="disabled")
+        
+        # Federalism tab
+        federalism_frame = tk.Frame(notebook, bg="white")
+        notebook.add(federalism_frame, text="Federalism")
+        
+        fed_text = scrolledtext.ScrolledText(federalism_frame, wrap=tk.WORD, font=("Arial", 11))
+        fed_text.pack(fill="both", expand=True, padx=10, pady=10)
+        fed_text.insert("1.0", """
+FEDERALISM: DIVISION OF POWER
+
+Federalism is the division of power between the national government and state governments.
+
+NATIONAL GOVERNMENT POWERS (Enumerated/Delegated)
+• Regulate interstate and foreign commerce
+• Coin money and regulate currency
+• Declare war and maintain military
+• Conduct foreign policy
+• Establish federal courts
+• Tax and spend for common defense and welfare
+
+STATE GOVERNMENT POWERS (Reserved)
+• Education
+• Intrastate commerce
+• Local law enforcement
+• Marriage and family law
+• Most criminal law
+• Property law
+
+CONCURRENT POWERS (Shared)
+• Tax citizens
+• Establish courts
+• Make and enforce laws
+• Provide for public welfare
+
+SUPREMACY CLAUSE (Article VI)
+Federal law takes precedence over state law when they conflict.
+However, states retain significant autonomy in many areas.
+
+10TH AMENDMENT
+"The powers not delegated to the United States by the Constitution, nor prohibited by it to the States, are reserved to the States respectively, or to the people."
+
+MODERN FEDERALISM
+• Federal grants to states (categorical and block grants)
+• Federal mandates requiring state compliance
+• Preemption: federal law overrides state law
+• Cooperative federalism: federal and state cooperation
+        """)
+        fed_text.config(state="disabled")
 
 def main():
     root = tk.Tk()

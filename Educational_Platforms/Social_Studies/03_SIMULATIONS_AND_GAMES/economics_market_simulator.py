@@ -17,12 +17,17 @@ import tkinter as tk
 from tkinter import ttk, messagebox
 import random
 import math
+import json
 
 class EconomicsSimulator:
     def __init__(self, root):
         self.root = root
-        self.root.title("Economics Market Simulator")
-        self.root.geometry("1000x700")
+        self.root.title("Economics Market Simulator - Learn Supply & Demand")
+        self.root.geometry("1200x800")
+        self.root.configure(bg="#f0f8ff")
+        
+        # Game difficulty settings
+        self.difficulty = "normal"  # easy, normal, hard
         
         # Game state
         self.money = 1000
@@ -43,6 +48,21 @@ class EconomicsSimulator:
         self.demand_history = [50]
         self.supply_history = [50]
         self.profit_history = [0]
+        self.sales_history = [0]
+        
+        # Achievements
+        self.achievements = []
+        
+        # Colors
+        self.colors = {
+            'bg': '#f0f8ff',
+            'primary': '#2e8b57',
+            'secondary': '#4169e1',
+            'accent': '#ff6347',
+            'success': '#32cd32',
+            'warning': '#ffa500',
+            'neutral': '#708090'
+        }
         
         # Random events
         self.events = [
@@ -58,6 +78,67 @@ class EconomicsSimulator:
         self.create_widgets()
         self.update_market()
         
+    def create_difficulty_selector(self):
+        """Create difficulty level selector"""
+        difficulty_frame = ttk.Frame(self.root)
+        difficulty_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        ttk.Label(difficulty_frame, text="Difficulty:", font=('Arial', 10, 'bold')).pack(side=tk.LEFT, padx=5)
+        
+        self.difficulty_var = tk.StringVar(value=self.difficulty)
+        difficulties = [
+            ("Easy", "easy", "More money, stable markets, forgiving mistakes"),
+            ("Normal", "normal", "Balanced challenge and learning"),
+            ("Hard", "hard", "Volatile markets, limited resources, realistic economics")
+        ]
+        
+        for name, value, desc in difficulties:
+            rb = ttk.Radiobutton(difficulty_frame, text=name, variable=self.difficulty_var, 
+                               value=value, command=self.change_difficulty)
+            rb.pack(side=tk.LEFT, padx=10)
+            
+            # Add tooltip-like description
+            rb.bind("<Enter>", lambda e, d=desc: self.show_tooltip(d))
+            rb.bind("<Leave>", lambda e: self.hide_tooltip())
+        
+        self.tooltip_label = ttk.Label(difficulty_frame, text="", foreground=self.colors['neutral'])
+        self.tooltip_label.pack(side=tk.LEFT, padx=20)
+    
+    def show_tooltip(self, text):
+        """Show tooltip text"""
+        self.tooltip_label.config(text=text)
+    
+    def hide_tooltip(self):
+        """Hide tooltip text"""
+        self.tooltip_label.config(text="")
+    
+    def change_difficulty(self):
+        """Change difficulty level"""
+        old_difficulty = self.difficulty
+        self.difficulty = self.difficulty_var.get()
+        
+        if old_difficulty != self.difficulty:
+            self.apply_difficulty_settings()
+            messagebox.showinfo("Difficulty Changed", 
+                              f"Difficulty changed to {self.difficulty.title()}!\n\n"
+                              f"Starting a new game with new settings.")
+            self.new_game()
+    
+    def apply_difficulty_settings(self):
+        """Apply difficulty-specific settings"""
+        if self.difficulty == "easy":
+            self.money = 1500
+            self.max_turns = 15
+            self.event_frequency = 0.3  # Less random events
+        elif self.difficulty == "normal":
+            self.money = 1000
+            self.max_turns = 20
+            self.event_frequency = 0.5
+        elif self.difficulty == "hard":
+            self.money = 750
+            self.max_turns = 25
+            self.event_frequency = 0.7  # More random events
+        
     def create_widgets(self):
         """Create all UI elements"""
         # Create notebook for tabs
@@ -70,10 +151,13 @@ class EconomicsSimulator:
         self.concepts_frame = ttk.Frame(self.notebook)
         self.scenarios_frame = ttk.Frame(self.notebook)
         
-        self.notebook.add(self.game_frame, text="Market Game")
-        self.notebook.add(self.tutorial_frame, text="Tutorial")
-        self.notebook.add(self.concepts_frame, text="Economic Concepts")
-        self.notebook.add(self.scenarios_frame, text="Real-World Scenarios")
+        self.notebook.add(self.game_frame, text="🎮 Market Game")
+        self.notebook.add(self.tutorial_frame, text="📚 Tutorial")
+        self.notebook.add(self.concepts_frame, text="🧠 Economic Concepts")
+        self.notebook.add(self.scenarios_frame, text="🌍 Real-World Scenarios")
+        
+        # Difficulty selector
+        self.create_difficulty_selector()
         
         self.create_game_tab()
         self.create_tutorial_tab()
@@ -83,16 +167,16 @@ class EconomicsSimulator:
     def create_game_tab(self):
         """Create the main game simulation"""
         # Status bar
-        status_frame = ttk.LabelFrame(self.game_frame, text="Business Status", padding=10)
+        status_frame = ttk.LabelFrame(self.game_frame, text="📊 Business Status", padding=10)
         status_frame.pack(fill=tk.X, padx=10, pady=5)
         
         self.status_labels = {}
         status_info = [
             ("Turn:", "turn"),
-            ("Money:", "money"),
-            ("Inventory:", "inventory"),
-            ("Market Price:", "market_price"),
-            ("Your Selling Price:", "selling_price")
+            ("💰 Money:", "money"),
+            ("📦 Inventory:", "inventory"),
+            ("📈 Market Price:", "market_price"),
+            ("💲 Your Selling Price:", "selling_price")
         ]
         
         for i, (label, key) in enumerate(status_info):
@@ -101,28 +185,39 @@ class EconomicsSimulator:
             self.status_labels[key].grid(row=0, column=i*2+1, padx=5)
         
         # Market information
-        market_frame = ttk.LabelFrame(self.game_frame, text="Market Information", padding=10)
+        market_frame = ttk.LabelFrame(self.game_frame, text="🏪 Market Information", padding=10)
         market_frame.pack(fill=tk.X, padx=10, pady=5)
         
         # Market conditions display
         conditions_frame = ttk.Frame(market_frame)
         conditions_frame.pack(fill=tk.X)
         
-        ttk.Label(conditions_frame, text="Market Demand:", font=('Arial', 9, 'bold')).grid(row=0, column=0, sticky=tk.W, padx=5)
+        ttk.Label(conditions_frame, text="📈 Market Demand:", font=('Arial', 9, 'bold')).grid(row=0, column=0, sticky=tk.W, padx=5)
         self.demand_label = ttk.Label(conditions_frame, text="", font=('Arial', 9))
         self.demand_label.grid(row=0, column=1, sticky=tk.W, padx=5)
         
-        ttk.Label(conditions_frame, text="Market Supply:", font=('Arial', 9, 'bold')).grid(row=0, column=2, sticky=tk.W, padx=5)
+        ttk.Label(conditions_frame, text="📦 Market Supply:", font=('Arial', 9, 'bold')).grid(row=0, column=2, sticky=tk.W, padx=5)
         self.supply_label = ttk.Label(conditions_frame, text="", font=('Arial', 9))
         self.supply_label.grid(row=0, column=3, sticky=tk.W, padx=5)
         
-        ttk.Label(conditions_frame, text="Production Cost:", font=('Arial', 9, 'bold')).grid(row=1, column=0, sticky=tk.W, padx=5)
+        ttk.Label(conditions_frame, text="⚙️ Production Cost:", font=('Arial', 9, 'bold')).grid(row=1, column=0, sticky=tk.W, padx=5)
         self.cost_label = ttk.Label(conditions_frame, text="", font=('Arial', 9))
         self.cost_label.grid(row=1, column=1, sticky=tk.W, padx=5)
         
-        # Event display
-        self.event_label = ttk.Label(market_frame, text="", font=('Arial', 10), wraplength=600, foreground='blue')
-        self.event_label.pack(pady=5)
+        # Event display with better styling
+        event_frame = ttk.Frame(market_frame)
+        event_frame.pack(fill=tk.X, pady=5)
+        self.event_label = ttk.Label(event_frame, text="", font=('Arial', 10), wraplength=600, 
+                                   foreground=self.colors['secondary'], background='#e6f3ff', padding=5)
+        self.event_label.pack(fill=tk.X)
+        
+        # Save/Load buttons
+        save_frame = ttk.Frame(market_frame)
+        save_frame.pack(fill=tk.X, pady=5)
+        
+        ttk.Button(save_frame, text="💾 Save Game", command=self.save_game).pack(side=tk.LEFT, padx=5)
+        ttk.Button(save_frame, text="📁 Load Game", command=self.load_game).pack(side=tk.LEFT, padx=5)
+        ttk.Button(save_frame, text="🏆 Achievements", command=self.show_achievements).pack(side=tk.LEFT, padx=5)
         
         # Actions frame
         actions_frame = ttk.LabelFrame(self.game_frame, text="Your Actions", padding=10)
@@ -173,15 +268,223 @@ class EconomicsSimulator:
         scrollbar.pack(side=tk.RIGHT, fill=tk.Y)
         self.results_text.config(yscrollcommand=scrollbar.set)
         
-        # Graph frame
-        graph_frame = ttk.LabelFrame(self.game_frame, text="Market Trends", padding=10)
+        # Graph frame with multiple charts
+        graph_frame = ttk.LabelFrame(self.game_frame, text="📊 Market Trends & Analysis", padding=10)
         graph_frame.pack(fill=tk.BOTH, expand=True, padx=10, pady=5)
         
-        self.canvas = tk.Canvas(graph_frame, bg='white', height=150)
+        # Graph controls
+        controls_frame = ttk.Frame(graph_frame)
+        controls_frame.pack(fill=tk.X, pady=5)
+        
+        ttk.Label(controls_frame, text="Show:", font=('Arial', 9, 'bold')).pack(side=tk.LEFT, padx=5)
+        
+        self.show_price = tk.BooleanVar(value=True)
+        self.show_profit = tk.BooleanVar(value=True)
+        self.show_demand = tk.BooleanVar(value=False)
+        
+        ttk.Checkbutton(controls_frame, text="Price", variable=self.show_price, 
+                       command=self.draw_graph).pack(side=tk.LEFT, padx=5)
+        ttk.Checkbutton(controls_frame, text="Profit", variable=self.show_profit, 
+                       command=self.draw_graph).pack(side=tk.LEFT, padx=5)
+        ttk.Checkbutton(controls_frame, text="Demand", variable=self.show_demand, 
+                       command=self.draw_graph).pack(side=tk.LEFT, padx=5)
+        
+        self.canvas = tk.Canvas(graph_frame, bg='white', height=200)
         self.canvas.pack(fill=tk.BOTH, expand=True)
         
         # New game button
-        ttk.Button(self.game_frame, text="New Game", command=self.new_game).pack(pady=5)
+        button_frame = ttk.Frame(self.game_frame)
+        button_frame.pack(fill=tk.X, padx=10, pady=5)
+        
+        ttk.Button(button_frame, text="🎮 New Game", command=self.new_game).pack(side=tk.LEFT, padx=5)
+        ttk.Button(button_frame, text="📊 Economic Analysis", command=self.show_analysis).pack(side=tk.LEFT, padx=5)
+        
+    def save_game(self):
+        """Save game state"""
+        game_state = {
+            'difficulty': self.difficulty,
+            'money': self.money,
+            'inventory': self.inventory,
+            'production_cost': self.production_cost,
+            'selling_price': self.selling_price,
+            'turn': self.turn,
+            'max_turns': self.max_turns,
+            'market_demand': self.market_demand,
+            'market_supply': self.market_supply,
+            'market_price': self.market_price,
+            'consumer_preference': self.consumer_preference,
+            'price_history': self.price_history,
+            'demand_history': self.demand_history,
+            'supply_history': self.supply_history,
+            'profit_history': self.profit_history,
+            'sales_history': self.sales_history,
+            'achievements': self.achievements
+        }
+        
+        try:
+            with open('economics_simulator_save.json', 'w') as f:
+                json.dump(game_state, f, indent=2)
+            messagebox.showinfo("Save Successful", "Game saved successfully!")
+        except Exception as e:
+            messagebox.showerror("Save Failed", f"Failed to save game: {str(e)}")
+    
+    def load_game(self):
+        """Load game state"""
+        try:
+            with open('economics_simulator_save.json', 'r') as f:
+                game_state = json.load(f)
+            
+            self.difficulty = game_state.get('difficulty', 'normal')
+            self.difficulty_var.set(self.difficulty)
+            self.apply_difficulty_settings()
+            
+            self.money = game_state.get('money', 1000)
+            self.inventory = game_state.get('inventory', 0)
+            self.production_cost = game_state.get('production_cost', 5)
+            self.selling_price = game_state.get('selling_price', 10)
+            self.turn = game_state.get('turn', 1)
+            self.max_turns = game_state.get('max_turns', 20)
+            self.market_demand = game_state.get('market_demand', 50)
+            self.market_supply = game_state.get('market_supply', 50)
+            self.market_price = game_state.get('market_price', 10)
+            self.consumer_preference = game_state.get('consumer_preference', 1.0)
+            self.price_history = game_state.get('price_history', [10])
+            self.demand_history = game_state.get('demand_history', [50])
+            self.supply_history = game_state.get('supply_history', [50])
+            self.profit_history = game_state.get('profit_history', [0])
+            self.sales_history = game_state.get('sales_history', [0])
+            self.achievements = game_state.get('achievements', [])
+            
+            self.update_display()
+            self.draw_graph()
+            
+            messagebox.showinfo("Load Successful", "Game loaded successfully!")
+            
+        except FileNotFoundError:
+            messagebox.showwarning("No Save File", "No saved game found!")
+        except Exception as e:
+            messagebox.showerror("Load Failed", f"Failed to load game: {str(e)}")
+    
+    def show_achievements(self):
+        """Display achievements"""
+        ach_win = tk.Toplevel(self.root)
+        ach_win.title("🏆 Economic Achievements")
+        ach_win.geometry("500x400")
+        ach_win.configure(bg=self.colors['bg'])
+        
+        ttk.Label(ach_win, text="🏆 Economic Achievements", 
+                 font=('Arial', 16, 'bold')).pack(pady=15)
+        
+        if not self.achievements:
+            ttk.Label(ach_win, text="No achievements unlocked yet.\n\nKeep playing to earn achievements!",
+                     font=('Arial', 11)).pack(pady=20)
+        else:
+            achievements_frame = ttk.Frame(ach_win)
+            achievements_frame.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+            
+            for achievement in self.achievements:
+                ach_frame = ttk.Frame(achievements_frame, relief='solid', borderwidth=1)
+                ach_frame.pack(fill=tk.X, pady=5)
+                ttk.Label(ach_frame, text=f"🏆 {achievement}", 
+                         font=('Arial', 11, 'bold')).pack(pady=8, padx=15)
+        
+        ttk.Button(ach_win, text="Close", command=ach_win.destroy).pack(pady=15)
+    
+    def check_achievements(self):
+        """Check and award achievements"""
+        new_achievements = []
+        
+        # Profit achievements
+        total_profit = sum(self.profit_history)
+        if total_profit >= 1000 and "Profit Master" not in self.achievements:
+            new_achievements.append("Profit Master")
+        if total_profit >= 500 and "Business Savvy" not in self.achievements:
+            new_achievements.append("Business Savvy")
+        
+        # Market understanding
+        if len([p for p in self.profit_history if p > 0]) >= 10 and "Market Expert" not in self.achievements:
+            new_achievements.append("Market Expert")
+        
+        # Survival achievements
+        if self.turn >= self.max_turns and self.money > 1000 and "Economic Survivor" not in self.achievements:
+            new_achievements.append("Economic Survivor")
+        
+        # Strategy achievements
+        avg_price_ratio = sum(self.price_history) / len(self.price_history) / 10
+        if 0.9 <= avg_price_ratio <= 1.1 and "Price Optimizer" not in self.achievements:
+            new_achievements.append("Price Optimizer")
+        
+        if new_achievements:
+            self.achievements.extend(new_achievements)
+            achievement_text = "🏆 New Achievements Unlocked!\n\n" + "\n".join(f"• {ach}" for ach in new_achievements)
+            messagebox.showinfo("Achievement Unlocked!", achievement_text)
+    
+    def show_analysis(self):
+        """Show economic analysis of current game"""
+        analysis_win = tk.Toplevel(self.root)
+        analysis_win.title("📊 Economic Analysis")
+        analysis_win.geometry("700x500")
+        analysis_win.configure(bg=self.colors['bg'])
+        
+        ttk.Label(analysis_win, text="📊 Economic Analysis", 
+                 font=('Arial', 16, 'bold')).pack(pady=15)
+        
+        analysis_text = tk.Text(analysis_win, wrap=tk.WORD, padx=10, pady=10, height=20)
+        analysis_text.pack(fill=tk.BOTH, expand=True, padx=20, pady=10)
+        
+        # Generate analysis
+        total_profit = sum(self.profit_history)
+        avg_profit = total_profit / max(1, len(self.profit_history))
+        profitable_turns = len([p for p in self.profit_history if p > 0])
+        total_sales = sum(self.sales_history)
+        
+        analysis = f"""
+ECONOMIC ANALYSIS - TURN {self.turn}
+
+═══════════════════════════════════════════════════════════════
+
+PERFORMANCE METRICS:
+• Total Profit: ${total_profit:.2f}
+• Average Profit per Turn: ${avg_profit:.2f}
+• Profitable Turns: {profitable_turns}/{len(self.profit_history)}
+• Total Items Sold: {total_sales}
+• Current Money: ${self.money:.2f}
+
+MARKET ANALYSIS:
+• Average Market Price: ${sum(self.price_history)/len(self.price_history):.2f}
+• Average Your Price: ${sum([p for p in self.price_history if p != 10]) / max(1, len([p for p in self.price_history if p != 10])):.2f}
+• Price Competitiveness: {'Good' if abs(self.selling_price - self.market_price) < 2 else 'Needs Adjustment'}
+
+ECONOMIC LESSONS LEARNED:
+
+1. SUPPLY & DEMAND RELATIONSHIP:
+   Your sales are affected by how your price compares to market conditions.
+   When you price too high, you sell fewer items. When you price competitively, you sell more.
+
+2. PROFIT MAXIMIZATION:
+   Profit = (Selling Price - Production Cost) × Items Sold
+   You need to balance price per item vs. quantity sold.
+
+3. MARKET VOLATILITY:
+   Random events affect market conditions. Successful businesses adapt to change.
+
+4. OPPORTUNITY COST:
+   Money spent on production can't be used for other opportunities.
+   Every business decision involves trade-offs.
+
+STRATEGY RECOMMENDATIONS:
+
+• {'✓ Good job staying competitive!' if abs(self.selling_price - self.market_price) < 2 else 'Consider adjusting your price to match market conditions.'}
+• {'✓ Strong profit performance!' if avg_profit > 50 else 'Focus on finding the optimal price point for maximum profit.'}
+• {'✓ Good market adaptation!' if profitable_turns / max(1, len(self.profit_history)) > 0.6 else 'Try to maintain profitability across more turns.'}
+
+Keep experimenting to master market economics!
+"""
+        
+        analysis_text.insert('1.0', analysis)
+        analysis_text.config(state=tk.DISABLED)
+        
+        ttk.Button(analysis_win, text="Close", command=analysis_win.destroy).pack(pady=10)
         
     def create_tutorial_tab(self):
         """Create tutorial tab"""
@@ -1003,26 +1306,62 @@ Economics is everywhere! Once you see it, you can't unsee it.
         
         # Record history
         self.profit_history.append(profit)
+        self.sales_history.append(actual_sales)
         
-        # Display results
-        result = f"\n{'='*60}\n"
-        result += f"TURN {self.turn} RESULTS:\n"
-        result += f"{'='*60}\n"
-        result += f"Items sold: {actual_sales} out of {actual_sales + self.inventory} in inventory\n"
-        result += f"Revenue: ${revenue:.2f}\n"
-        result += f"Cost of goods sold: ${cost_of_goods:.2f}\n"
-        result += f"Profit this turn: ${profit:.2f}\n"
-        result += f"Remaining inventory: {self.inventory}\n"
-        result += f"Total money: ${self.money:.2f}\n"
+        # Display results with educational feedback
+        result = f"\n{'='*70}\n"
+        result += f"TURN {self.turn} RESULTS - ECONOMIC ANALYSIS\n"
+        result += f"{'='*70}\n"
+        result += f"📊 SALES PERFORMANCE:\n"
+        result += f"• Items sold: {actual_sales} out of {actual_sales + self.inventory} in inventory\n"
+        result += f"• Revenue: ${revenue:.2f}\n"
+        result += f"• Cost of goods sold: ${cost_of_goods:.2f}\n"
+        result += f"• Profit this turn: ${profit:.2f}\n"
+        result += f"• Remaining inventory: {self.inventory}\n"
+        result += f"• Total money: ${self.money:.2f}\n"
         
-        if actual_sales < potential_sales:
-            result += f"\nNote: Could have sold {potential_sales - actual_sales} more if you had inventory!\n"
+        # Economic analysis
+        result += f"\n🧠 ECONOMIC ANALYSIS:\n"
         
+        # Price analysis
+        price_ratio = self.selling_price / self.market_price
+        if price_ratio < 0.8:
+            result += f"• PRICING: Your price (${self.selling_price:.2f}) is significantly below market price (${self.market_price:.2f})\n"
+            result += f"  → You sold {actual_sales} items but profit margin is low\n"
+        elif price_ratio > 1.2:
+            result += f"• PRICING: Your price (${self.selling_price:.2f}) is above market price (${self.market_price:.2f})\n"
+            result += f"  → Fewer customers bought due to higher price\n"
+        else:
+            result += f"• PRICING: Your price is competitive with market conditions\n"
+            result += f"  → Good balance of sales volume and profit margin\n"
+        
+        # Inventory analysis
         if actual_sales < self.inventory + actual_sales:
-            if price_ratio > 1.2:
-                result += f"\nTip: Lower your price to sell more items next turn.\n"
+            result += f"• INVENTORY: You could have sold {self.inventory + actual_sales - actual_sales} more items\n"
+            result += f"  → Consider producing more next turn or lowering price\n"
+        
+        # Profit analysis
+        if profit > 0:
+            result += f"• PROFITABILITY: ✅ Profitable turn! You earned ${profit:.2f}\n"
+        else:
+            result += f"• PROFITABILITY: ❌ Loss of ${-profit:.2f} this turn\n"
+            result += f"  → Review your pricing and production costs\n"
+        
+        # Market condition feedback
+        if self.market_demand > 60:
+            result += f"• MARKET: High demand - good opportunity for sales!\n"
+        elif self.market_demand < 40:
+            result += f"• MARKET: Low demand - consider lowering price or reducing production\n"
+        
+        # Strategy tips
+        result += f"\n💡 STRATEGY TIPS:\n"
+        if self.turn < self.max_turns:
+            if profit <= 0:
+                result += f"• Try adjusting your price closer to market conditions\n"
+                result += f"• Consider producing fewer items to reduce costs\n"
             else:
-                result += f"\nTip: Market demand is currently {self.market_demand:.1f} units.\n"
+                result += f"• Great job! Try to maintain this profitable strategy\n"
+                result += f"• Watch for market changes that might affect demand\n"
         
         self.results_text.insert('1.0', result)
         
@@ -1037,6 +1376,9 @@ Economics is everywhere! Once you see it, you can't unsee it.
         self.update_market()
         self.update_display()
         self.draw_graph()
+        
+        # Check achievements
+        self.check_achievements()
         
     def update_market(self):
         """Update market conditions"""
@@ -1072,7 +1414,7 @@ Economics is everywhere! Once you see it, you can't unsee it.
         self.supply_history.append(self.market_supply)
         
     def draw_graph(self):
-        """Draw market trends graph"""
+        """Draw market trends graph with multiple series"""
         self.canvas.delete('all')
         
         if len(self.price_history) < 2:
@@ -1084,7 +1426,7 @@ Economics is everywhere! Once you see it, you can't unsee it.
         if width < 100 or height < 100:
             return
         
-        margin = 40
+        margin = 50
         graph_width = width - 2 * margin
         graph_height = height - 2 * margin
         
@@ -1094,30 +1436,53 @@ Economics is everywhere! Once you see it, you can't unsee it.
         
         # Labels
         self.canvas.create_text(width // 2, height - 10, text="Turn", font=('Arial', 10))
-        self.canvas.create_text(15, height // 2, text="Price ($)", angle=90, font=('Arial', 10))
+        self.canvas.create_text(15, height // 2, text="Value", angle=90, font=('Arial', 10))
         
-        # Draw price history
-        if len(self.price_history) > 1:
-            max_price = max(self.price_history)
-            min_price = min(self.price_history)
-            price_range = max_price - min_price if max_price != min_price else 1
+        # Prepare data series
+        series_data = []
+        
+        if self.show_price.get():
+            series_data.append(('Price ($)', self.price_history, 'blue', 2))
+        
+        if self.show_profit.get() and len(self.profit_history) > 1:
+            # Normalize profit to positive values for display
+            profit_data = [p + 100 for p in self.profit_history]  # Shift up by 100
+            series_data.append(('Profit ($)', profit_data, 'green', 2))
+        
+        if self.show_demand.get():
+            series_data.append(('Demand', self.demand_history, 'red', 2))
+        
+        # Draw each series
+        for name, data, color, width_line in series_data:
+            if len(data) < 2:
+                continue
+            
+            # Find min/max for scaling
+            data_min = min(data)
+            data_max = max(data)
+            data_range = data_max - data_min if data_max != data_min else 1
             
             points = []
-            for i, price in enumerate(self.price_history):
-                x = margin + (i / (len(self.price_history) - 1)) * graph_width
-                y = height - margin - ((price - min_price) / price_range) * graph_height
+            for i, value in enumerate(data):
+                x = margin + (i / (len(data) - 1)) * graph_width
+                y = height - margin - ((value - data_min) / data_range) * graph_height
                 points.extend([x, y])
             
             if len(points) >= 4:
-                self.canvas.create_line(points, fill='blue', width=2, smooth=True)
+                self.canvas.create_line(points, fill=color, width=width_line, smooth=True)
         
         # Legend
-        self.canvas.create_line(width - 150, 20, width - 120, 20, fill='blue', width=2)
-        self.canvas.create_text(width - 80, 20, text="Market Price", anchor=tk.W, font=('Arial', 9))
+        legend_y = 20
+        for name, _, color, _ in series_data:
+            self.canvas.create_line(width - 150, legend_y, width - 120, legend_y, fill=color, width=2)
+            self.canvas.create_text(width - 80, legend_y, text=name, anchor=tk.W, font=('Arial', 9))
+            legend_y += 20
         
     def new_game(self):
         """Start a new game"""
-        self.money = 1000
+        # Apply difficulty settings
+        self.apply_difficulty_settings()
+        
         self.inventory = 0
         self.production_cost = 5
         self.selling_price = 10
@@ -1132,47 +1497,124 @@ Economics is everywhere! Once you see it, you can't unsee it.
         self.demand_history = [50]
         self.supply_history = [50]
         self.profit_history = [0]
+        self.sales_history = [0]
         
         self.results_text.delete('1.0', tk.END)
-        self.results_text.insert('1.0', "New game started! Produce items and set your price.\n")
+        self.results_text.insert('1.0', f"🎮 New {self.difficulty.title()} game started!\n\n"
+                                       f"Starting money: ${self.money:.2f}\n"
+                                       f"Goal: Complete {self.max_turns} turns profitably.\n\n"
+                                       f"Produce items and set your selling price to begin!\n")
         
         self.update_market()
         self.update_display()
         self.canvas.delete('all')
         
+        # Reset achievements for new game
+        self.achievements = []
+        
     def end_game(self):
         """End game and show results"""
         total_profit = sum(self.profit_history)
-        avg_profit = total_profit / len(self.profit_history)
+        avg_profit = total_profit / len(self.profit_history) if self.profit_history else 0
+        profitable_turns = len([p for p in self.profit_history if p > 0])
+        total_sales = sum(self.sales_history)
         
-        result = f"\n{'='*60}\n"
-        result += f"GAME OVER!\n"
-        result += f"{'='*60}\n"
-        result += f"Final money: ${self.money:.2f}\n"
-        result += f"Starting money: $1000\n"
-        result += f"Net change: ${self.money - 1000:.2f}\n"
-        result += f"Total profit over all turns: ${total_profit:.2f}\n"
-        result += f"Average profit per turn: ${avg_profit:.2f}\n"
+        result = f"\n{'='*70}\n"
+        result += f"🎉 GAME OVER - FINAL ECONOMIC ANALYSIS\n"
+        result += f"{'='*70}\n"
+        result += f"📈 FINANCIAL SUMMARY:\n"
+        result += f"• Starting money: ${1000 if self.difficulty == 'normal' else (1500 if self.difficulty == 'easy' else 750):.2f}\n"
+        result += f"• Final money: ${self.money:.2f}\n"
+        result += f"• Net change: ${self.money - (1000 if self.difficulty == 'normal' else (1500 if self.difficulty == 'easy' else 750)):.2f}\n"
+        result += f"• Total profit over all turns: ${total_profit:.2f}\n"
+        result += f"• Average profit per turn: ${avg_profit:.2f}\n"
+        result += f"• Profitable turns: {profitable_turns}/{len(self.profit_history)}\n"
+        result += f"• Total items sold: {total_sales}\n"
         
         # Performance rating
-        if self.money >= 2000:
-            rating = "EXCELLENT! Master economist!"
-        elif self.money >= 1500:
-            rating = "GREAT! Strong business skills!"
-        elif self.money >= 1200:
-            rating = "GOOD! Profitable business!"
-        elif self.money >= 1000:
-            rating = "OKAY. Broke even."
-        else:
-            rating = "NEEDS IMPROVEMENT. Lost money."
+        if self.difficulty == "easy":
+            if self.money >= 2000:
+                rating = "EXCELLENT! Master economist even on easy mode!"
+                score = 5
+            elif self.money >= 1700:
+                rating = "GREAT! Strong understanding of economics!"
+                score = 4
+            elif self.money >= 1500:
+                rating = "GOOD! Profitable business performance!"
+                score = 3
+            elif self.money >= 1300:
+                rating = "OKAY. Broke even with extra starting money."
+                score = 2
+            else:
+                rating = "NEEDS IMPROVEMENT. Focus on pricing strategy."
+                score = 1
+        elif self.difficulty == "normal":
+            if self.money >= 2000:
+                rating = "EXCELLENT! Economics virtuoso!"
+                score = 5
+            elif self.money >= 1500:
+                rating = "GREAT! Master of supply and demand!"
+                score = 4
+            elif self.money >= 1200:
+                rating = "GOOD! Solid business acumen!"
+                score = 3
+            elif self.money >= 1000:
+                rating = "OKAY. Broke even - room for improvement."
+                score = 2
+            else:
+                rating = "NEEDS IMPROVEMENT. Study pricing and market dynamics."
+                score = 1
+        else:  # hard
+            if self.money >= 1500:
+                rating = "EXCELLENT! Economics genius on hard mode!"
+                score = 5
+            elif self.money >= 1200:
+                rating = "GREAT! Thrived in challenging market conditions!"
+                score = 4
+            elif self.money >= 900:
+                rating = "GOOD! Survived hard mode economics!"
+                score = 3
+            elif self.money >= 750:
+                rating = "OKAY. Broke even despite tough conditions."
+                score = 2
+            else:
+                rating = "NEEDS IMPROVEMENT. Hard mode requires better strategy."
+                score = 1
         
-        result += f"\nPerformance: {rating}\n"
-        result += f"\nThanks for playing! Click 'New Game' to try again.\n"
+        result += f"\n🏆 PERFORMANCE RATING: {rating}\n"
+        result += f"   Difficulty: {self.difficulty.title()} | Score: {score}/5\n"
+        
+        # Economic lessons learned
+        result += f"\n🧠 ECONOMIC LESSONS FROM THIS GAME:\n"
+        result += f"• Supply & Demand: Market prices change based on availability and desire\n"
+        result += f"• Profit Maximization: Balance price per item vs. quantity sold\n"
+        result += f"• Opportunity Cost: Every decision has trade-offs\n"
+        result += f"• Market Adaptation: Successful businesses respond to changing conditions\n"
+        
+        if profitable_turns / len(self.profit_history) > 0.7:
+            result += f"• You maintained profitability most turns - excellent market understanding!\n"
+        elif profitable_turns / len(self.profit_history) > 0.5:
+            result += f"• You were profitable over half the time - good progress!\n"
+        else:
+            result += f"• Focus on finding the optimal price point for consistent profits.\n"
+        
+        result += f"\n💡 KEY TAKEAWAYS:\n"
+        result += f"• Price too high → Fewer sales, more profit per item\n"
+        result += f"• Price too low → More sales, less profit per item\n"
+        result += f"• Market conditions change - adapt your strategy!\n"
+        result += f"• Balance inventory with expected demand\n"
+        result += f"• Watch for random events that affect the market\n"
+        
+        result += f"\n🎮 Ready for another challenge? Click 'New Game' to try a different difficulty!\n"
         
         self.results_text.insert('1.0', result)
         
+        # Final achievement check
+        self.check_achievements()
+        
         messagebox.showinfo("Game Over", 
-                          f"Final money: ${self.money:.2f}\n\n{rating}")
+                          f"Final money: ${self.money:.2f}\n\n{rating}\n\n"
+                          f"Check the results panel for detailed economic analysis!")
 
 def main():
     root = tk.Tk()
